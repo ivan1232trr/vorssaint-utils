@@ -598,6 +598,9 @@ if (( TEST )); then
         Sources/Vorssaint/Services/Uninstall/UninstallerSupport.swift
         Sources/Vorssaint/Services/ManagedDownloads/WhatsAppDownloadSupport.swift
         Sources/Vorssaint/Core/SecureInputSupport.swift
+        Sources/Vorssaint/UI/OnChangeCompat.swift
+        Sources/Vorssaint/UI/VenturaCompat.swift
+        Sources/Vorssaint/Support/VenturaSystemCompat.swift
         Tests/*.swift
         build/generated-tests/*.swift
     )

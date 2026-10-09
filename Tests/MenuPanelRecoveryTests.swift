@@ -124,6 +124,9 @@ enum MenuPanelRecoveryTests {
         }
         @discardableResult
         func activate(options: [Int]) -> Bool { activate(from: .current, options: options) }
+        /// Mirrors the production helper's macOS 14+ path, where these tests run.
+        @discardableResult
+        func activateFromCurrentCompat(options: [Int]) -> Bool { activate(from: .current, options: options) }
     }
     final class NSWorkspace {
         static var shared = NSWorkspace()

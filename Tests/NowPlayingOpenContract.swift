@@ -35,6 +35,10 @@ enum NowPlayingOpenContract {
             events.append("fallback:\(processIdentifier):\(options.contains(.activateAllWindows))")
             return true
         }
+        /// Mirrors the production helper's macOS 14+ path, where these tests run.
+        @discardableResult func activateFromCurrentCompat(options: NSApplication.ActivationOptions) -> Bool {
+            activate(from: .current, options: options)
+        }
     }
     enum Handoff {
         static func yield(to app: App) { events.append("yield:\(app.processIdentifier)") }
