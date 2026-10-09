@@ -6,7 +6,7 @@ import PackageDescription
 
 let package = Package(
     name: "Vorssaint",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v13)],
     targets: [
         .systemLibrary(
             name: "HIDEventSystem",

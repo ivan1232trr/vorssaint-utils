@@ -1,0 +1,120 @@
+# Builds the Intel (x86_64) app for macOS 13 Ventura on every push to the
+# ventura-port branch, and reports the result two ways:
+#   1. errors + log tail committed to the ventura-ci-results branch (readable with git),
+#   2. the finished app attached to the run as a downloadable artifact.
+name: Ventura port build
+
+on:
+  # Rebuild whenever the port branch changes.
+  push:
+    branches: [ventura-port]
+  # Allow a manual rerun from the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  # Needed to push the results branch back to this repository.
+  contents: write
+
+concurrency:
+  # One build at a time per branch.
+  group: ventura-port-${{ github.ref }}
+  # A newer push makes an in-progress build pointless, so cancel it.
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # Same macOS/Xcode image the upstream project builds its releases on.
+    runs-on: macos-26
+    # A clean release build takes well under this.
+    timeout-minutes: 60
+    steps:
+      # Fetch the source; credentials are kept so the results push below works.
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      # Toolchain versions, recorded in the report for reproducibility.
+      - name: Toolchain
+        run: |
+          # Compiler version.
+          swiftc --version
+          # SDK version the build compiles against.
+          xcrun --sdk macosx --show-sdk-version
+
+      # The build itself. Failures are captured instead of stopping the job,
+      # so the error report still gets published.
+      - name: Build x86_64 for macOS 13
+        id: build
+        run: |
+          # Keep going on failure; the exit code is saved below.
+          set +e
+          # Build the Intel slice and keep a full copy of the output.
+          ./build.sh --arch=x86_64 2>&1 | tee build.log
+          # Exit code of build.sh (not tee), from bash's PIPESTATUS.
+          status=${PIPESTATUS[0]}
+          # Expose it to later steps.
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          # Always succeed here; the final step fails the job if needed.
+          exit 0
+
+      # Turn the log into a compact, de-duplicated error list.
+      - name: Summarize errors
+        if: always()
+        run: |
+          # Folder that becomes the results branch.
+          mkdir -p report
+          # Every distinct compiler error, with its file and line.
+          grep -E ': error: ' build.log | sort -u > report/errors.txt || true
+          # Same for warnings about availability, which hint at runtime gaps.
+          grep -E 'only available in macOS|is unavailable in macOS' build.log | sort -u > report/availability.txt || true
+          # The end of the log, for failures that are not compiler errors.
+          tail -n 200 build.log > report/log-tail.txt
+          # One-line status for a quick check.
+          {
+            # Build exit code (0 means the app was produced).
+            echo "status=${{ steps.build.outputs.status }}"
+            # Number of distinct errors.
+            echo "errors=$(wc -l < report/errors.txt | tr -d ' ')"
+            # Commit that was built.
+            echo "commit=${GITHUB_SHA}"
+          } > report/status.txt
+          # Print the summary in the run log too.
+          cat report/status.txt
+
+      # Publish the report as a single-commit branch that git can fetch.
+      - name: Push results branch
+        if: always()
+        run: |
+          # Work in a throwaway folder so the source checkout is untouched.
+          cd report
+          # Fresh repository holding only the report files.
+          git init -q
+          # Commit identity for the bot.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Stage every report file.
+          git add -A
+          # One commit named after the built commit.
+          git commit -qm "Ventura build report for ${GITHUB_SHA}"
+          # Force-push: only the latest report matters.
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/ventura-ci-results
+
+      # Zip the app with ditto, which preserves the bundle's signature and symlinks.
+      - name: Package app
+        if: steps.build.outputs.status == '0'
+        run: ditto -c -k --keepParent "build/stage/Vorssaint.app" Vorssaint-Ventura-Intel.zip
+
+      # Attach the zip to the run for download from the Actions tab.
+      - name: Upload app
+        if: steps.build.outputs.status == '0'
+        uses: actions/upload-artifact@v4
+        with:
+          # Name shown under the run's Artifacts section.
+          name: Vorssaint-Ventura-Intel
+          # The zipped app from the previous step.
+          path: Vorssaint-Ventura-Intel.zip
+
+      # Mark the run red when the build failed, after the report is published.
+      - name: Fail on build error
+        if: steps.build.outputs.status != '0'
+        run: exit 1

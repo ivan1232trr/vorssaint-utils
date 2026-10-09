@@ -93,7 +93,7 @@ FAN_HELPER_ID="$APP_BUNDLE_ID.fan-control"
 NOW_PLAYING_ADAPTER_ID="$APP_BUNDLE_ID.now-playing"
 NOW_PLAYING_ADAPTER="libVorssaintNowPlaying.dylib"
 # Deployment floor shared by every slice; matches LSMinimumSystemVersion in Info.plist.
-DEPLOYMENT_VERSION="14.0"
+DEPLOYMENT_VERSION="13.0"
 # The test runner executes on this Mac, so it is always built for the host CPU.
 TARGET="$HOST_ARCH-apple-macosx$DEPLOYMENT_VERSION"
 ENTITLEMENTS="Resources/Vorssaint.entitlements"
@@ -727,7 +727,7 @@ else
             --app-icon AppIcon \
             --platform macosx \
             --target-device mac \
-            --minimum-deployment-target 14.0 \
+            --minimum-deployment-target "$DEPLOYMENT_VERSION" \
             --enable-on-demand-resources NO \
             --output-partial-info-plist "$ICON_TMP/partial-info.plist" \
             >"$ICON_TMP/actool.log" 2>&1 && [[ -s "$ICON_TMP/catalog/Assets.car" ]]; then
