@@ -28,10 +28,14 @@ trap 'exit 1' INT TERM HUP
 
 # Flags: --dev builds the local-only "Vorssaint (Developer)" variant (its own
 # bundle id, so it coexists with the official app); --install puts it in /Applications.
+# --arch=arm64|x86_64|universal picks which CPU the app is built for; without it
+# the build targets the Mac it runs on, so an Intel Mac builds an Intel app.
 DEV=0
 INSTALL=0
 TEST=0
 TEST_ARGS=()
+# Empty means "not given on the command line"; resolved to the host CPU below.
+ARCH_REQUEST=""
 for arg in "$@"; do
     case "$arg" in
         --dev)     DEV=1 ;;
@@ -39,8 +43,34 @@ for arg in "$@"; do
         --test)    TEST=1 ;;
         --test-suite=*) TEST=1; TEST_ARGS+=("--suite=${arg#*=}") ;;
         --list-tests) TEST=1; TEST_ARGS+=(--list) ;;
+        # Strip the "--arch=" prefix and keep the value (arm64, x86_64 or universal).
+        --arch=*)  ARCH_REQUEST="${arg#*=}" ;;
     esac
 done
+
+# The CPU of the Mac running this script. hw.optional.arm64 reads 1 on Apple
+# Silicon even when the shell itself runs under Rosetta, where `uname -m` would
+# wrongly answer x86_64; on an Intel Mac the key is missing or 0.
+if [[ "$(sysctl -n hw.optional.arm64 2>/dev/null || echo 0)" == "1" ]]; then
+    # Apple Silicon host.
+    HOST_ARCH="arm64"
+else
+    # Intel host.
+    HOST_ARCH="x86_64"
+fi
+
+# Turn the request into the list of CPU slices to compile. Each slice is built
+# separately and the slices are merged with lipo when there is more than one.
+case "${ARCH_REQUEST:-$HOST_ARCH}" in
+    # One slice for Apple Silicon Macs.
+    arm64)     ARCHS=(arm64) ;;
+    # One slice for Intel Macs.
+    x86_64)    ARCHS=(x86_64) ;;
+    # Both slices in one binary that runs natively on either kind of Mac.
+    universal) ARCHS=(arm64 x86_64) ;;
+    # Anything else is a typo; stop before compiling for the wrong CPU.
+    *) echo "✗ Unknown --arch value '$ARCH_REQUEST' (use arm64, x86_64 or universal)" >&2; exit 2 ;;
+esac
 
 if (( DEV )); then
     APP_NAME="Vorssaint (Developer)"
@@ -62,7 +92,10 @@ FAN_HELPER_ID="$APP_BUNDLE_ID.fan-control"
 # Sources/NowPlayingAdapter. Staged under Contents/Frameworks, signed on its own.
 NOW_PLAYING_ADAPTER_ID="$APP_BUNDLE_ID.now-playing"
 NOW_PLAYING_ADAPTER="libVorssaintNowPlaying.dylib"
-TARGET="arm64-apple-macosx14.0"
+# Deployment floor shared by every slice; matches LSMinimumSystemVersion in Info.plist.
+DEPLOYMENT_VERSION="14.0"
+# The test runner executes on this Mac, so it is always built for the host CPU.
+TARGET="$HOST_ARCH-apple-macosx$DEPLOYMENT_VERSION"
 ENTITLEMENTS="Resources/Vorssaint.entitlements"
 LEGACY_IDENTITY="Vorssaint Utils Signing"
 
@@ -123,6 +156,22 @@ codesign_with_timestamp_retry() {
         fi
     done
     return 1
+}
+
+# Produces one binary at $1 from the per-CPU slices that follow. A single slice
+# is copied as is; several are merged by lipo into a universal (fat) binary.
+merge_slices() {
+    # Where the final binary goes.
+    local output="$1"
+    # Drop the output path so "$@" holds only the slice paths.
+    shift
+    if (( $# == 1 )); then
+        # One CPU: nothing to merge, the slice is the binary.
+        cp "$1" "$output"
+    else
+        # Several CPUs: stitch them into one universal binary.
+        lipo -create "$@" -output "$output"
+    fi
 }
 
 write_swift_output_file_map() {
@@ -577,40 +626,87 @@ if (( ! DEV )); then
     # changed since, and a fresh checkout has none.
     find build -mindepth 1 -maxdepth 1 ! -name objects -exec rm -rf {} + 2>/dev/null || true
 fi
-APP_OBJECT_DIR="build/objects/$EXECUTABLE"
-mkdir -p build "$APP_OBJECT_DIR"
-APP_OUTPUT_FILE_MAP="$APP_OBJECT_DIR/output-file-map.json"
-write_swift_output_file_map "$APP_OUTPUT_FILE_MAP" "$APP_OBJECT_DIR" "${APP_SOURCES[@]}"
-# Without -j the driver compiles one file at a time, and without batch mode
-# each file's compiler parses the whole module again: a clean release took a
-# quarter of an hour. Batches share that work and run on every core, and the
-# optimization stays per file, as before.
-swiftc "${APP_OPTIMIZATION_FLAGS[@]}" -incremental -enable-batch-mode -j "$(sysctl -n hw.logicalcpu)" \
-    -output-file-map "$APP_OUTPUT_FILE_MAP" \
-    -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" "${VM_STATISTICS_COMPAT_FLAGS[@]}" "${HID_EVENT_SYSTEM_FLAGS[@]}" \
-    "${BUILD_VARIANT_FLAGS[@]}" \
-    "${APP_SOURCES[@]}" -o "build/$EXECUTABLE"
+# Each CPU slice keeps its own incremental records and output folder, so an
+# arm64 object file is never mistaken for an x86_64 one between builds.
+APP_SLICES=()
+HELPER_SLICES=()
+ADAPTER_SLICES=()
+for arch in "${ARCHS[@]}"; do
+    # Compiler triple for this slice, e.g. x86_64-apple-macosx14.0.
+    SLICE_TARGET="$arch-apple-macosx$DEPLOYMENT_VERSION"
+    # Folder that receives this slice's three binaries before they are merged.
+    SLICE_DIR="build/slices/$arch"
+    # Incremental compiler records for this slice only.
+    APP_OBJECT_DIR="build/objects/$EXECUTABLE/$arch"
+    # Create both folders (no error if they already exist).
+    mkdir -p "$SLICE_DIR" "$APP_OBJECT_DIR"
+    # Map each source file to its object file inside this slice's record folder.
+    APP_OUTPUT_FILE_MAP="$APP_OBJECT_DIR/output-file-map.json"
+    # Write that map so the incremental build knows where every object lives.
+    write_swift_output_file_map "$APP_OUTPUT_FILE_MAP" "$APP_OBJECT_DIR" "${APP_SOURCES[@]}"
 
-echo "▸ Compiling protected fan helper…"
-swiftc -O -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" "${BUILD_VARIANT_FLAGS[@]}" \
-    Sources/Vorssaint/Services/FanControl/FanControlSupport.swift \
-    Sources/Vorssaint/Services/FanControl/FanControlXPC.swift \
-    Sources/Vorssaint/Services/SystemMonitor/SMCClient.swift \
-    Sources/Vorssaint/Services/Metrics/TemperatureSensorSelector.swift \
-    Sources/Vorssaint/Services/FanControl/FanControlHardware.swift \
-    Sources/FanControlHelper/main.swift \
-    -o "build/$FAN_HELPER_ID"
-"build/$FAN_HELPER_ID" --selftest
+    echo "  · app ($arch)"
+    # Without -j the driver compiles one file at a time, and without batch mode
+    # each file's compiler parses the whole module again: a clean release took a
+    # quarter of an hour. Batches share that work and run on every core, and the
+    # optimization stays per file, as before.
+    swiftc "${APP_OPTIMIZATION_FLAGS[@]}" -incremental -enable-batch-mode -j "$(sysctl -n hw.logicalcpu)" \
+        -output-file-map "$APP_OUTPUT_FILE_MAP" \
+        -target "$SLICE_TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" "${VM_STATISTICS_COMPAT_FLAGS[@]}" "${HID_EVENT_SYSTEM_FLAGS[@]}" \
+        "${BUILD_VARIANT_FLAGS[@]}" \
+        "${APP_SOURCES[@]}" -o "$SLICE_DIR/$EXECUTABLE"
+    # Remember this slice so it can be merged once every CPU is done.
+    APP_SLICES+=("$SLICE_DIR/$EXECUTABLE")
 
-echo "▸ Compiling Now Playing adapter…"
-swiftc -O -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" -emit-library \
-    -module-name VorssaintNowPlaying \
-    Sources/NowPlayingAdapter/NowPlayingAdapter.swift \
-    Sources/NowPlayingAdapter/NowPlayingQueue.swift \
-    Sources/NowPlayingAdapter/NowPlayingSelection.swift \
-    Sources/Vorssaint/Services/Notch/NotchPlaybackSource.swift \
-    Sources/Vorssaint/Services/Notch/NotchPlaybackCommand.swift \
-    -o "build/$NOW_PLAYING_ADAPTER"
+    echo "  · protected fan helper ($arch)"
+    # The privileged fan helper ships beside the app and must match its CPUs.
+    swiftc -O -target "$SLICE_TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" "${BUILD_VARIANT_FLAGS[@]}" \
+        Sources/Vorssaint/Services/FanControl/FanControlSupport.swift \
+        Sources/Vorssaint/Services/FanControl/FanControlXPC.swift \
+        Sources/Vorssaint/Services/SystemMonitor/SMCClient.swift \
+        Sources/Vorssaint/Services/Metrics/TemperatureSensorSelector.swift \
+        Sources/Vorssaint/Services/FanControl/FanControlHardware.swift \
+        Sources/FanControlHelper/main.swift \
+        -o "$SLICE_DIR/$FAN_HELPER_ID"
+    # Remember the helper slice for merging.
+    HELPER_SLICES+=("$SLICE_DIR/$FAN_HELPER_ID")
+
+    echo "  · Now Playing adapter ($arch)"
+    # /usr/bin/perl loads this library, and perl runs as the Mac's native CPU,
+    # so on an Intel Mac the library must contain an x86_64 slice.
+    swiftc -O -target "$SLICE_TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" -emit-library \
+        -module-name VorssaintNowPlaying \
+        Sources/NowPlayingAdapter/NowPlayingAdapter.swift \
+        Sources/NowPlayingAdapter/NowPlayingQueue.swift \
+        Sources/NowPlayingAdapter/NowPlayingSelection.swift \
+        Sources/Vorssaint/Services/Notch/NotchPlaybackSource.swift \
+        Sources/Vorssaint/Services/Notch/NotchPlaybackCommand.swift \
+        -o "$SLICE_DIR/$NOW_PLAYING_ADAPTER"
+    # Remember the adapter slice for merging.
+    ADAPTER_SLICES+=("$SLICE_DIR/$NOW_PLAYING_ADAPTER")
+done
+
+echo "▸ Merging ${ARCHS[*]} into the final binaries…"
+# The staging steps below read these three paths, exactly as before.
+merge_slices "build/$EXECUTABLE" "${APP_SLICES[@]}"
+# Same for the fan helper.
+merge_slices "build/$FAN_HELPER_ID" "${HELPER_SLICES[@]}"
+# Same for the Now Playing library.
+merge_slices "build/$NOW_PLAYING_ADAPTER" "${ADAPTER_SLICES[@]}"
+# Print which CPUs each binary now contains, as a visible check.
+lipo -archs "build/$EXECUTABLE"
+
+# The helper's self-test executes it, which only works when this Mac can run
+# one of its slices. (( ARCHS[(Ie)$HOST_ARCH] )) is zsh for "the host CPU is in
+# the list": true for a native or universal build, false when cross-building.
+if (( ${ARCHS[(Ie)$HOST_ARCH]} )); then
+    # Native slice present: run the self-test as the build always has.
+    "build/$FAN_HELPER_ID" --selftest
+else
+    # Cross-build (e.g. x86_64 on Apple Silicon): Rosetta may be missing, so
+    # skip rather than fail; the self-test runs when built on the target Mac.
+    echo "  (skipping fan helper self-test: built for ${ARCHS[*]} on a $HOST_ARCH Mac)"
+fi
 
 echo "▸ Generating app icon…"
 swift Tools/MakeIcon.swift build/AppIcon.iconset

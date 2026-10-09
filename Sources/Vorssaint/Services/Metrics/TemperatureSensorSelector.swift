@@ -11,6 +11,9 @@ enum CPUTemperaturePlatform: Equatable {
     case appleM4Family
     case appleM5Family
     case unmappedAppleSilicon
+    /// Intel Mac: its SMC names CPU sensors TC…, GPU sensors TG…, and uses
+    /// Tp… for the power supply, so the Apple Silicon key rules do not apply.
+    case intel
     case generic
 }
 
@@ -61,6 +64,8 @@ enum TemperatureSensorSelector {
         // Preserve the established Tp/Te reading path for this supported chip
         // until a verified per-core map is available.
         if brand == "Apple A18 Pro" { return .generic }
+        // Intel brand strings start with "Intel(R) Core(TM)" or "Intel(R) Xeon(R)".
+        if brand.hasPrefix("Intel") { return .intel }
         switch appleSiliconGeneration(in: brand) {
         case 1: return .appleM1Family
         case 2: return .appleM2Family
@@ -105,7 +110,9 @@ enum TemperatureSensorSelector {
         switch platform {
         case .appleM1Family, .appleM2Family, .appleM3Family, .appleM4Family, .appleM5Family:
             return true
-        case .unmappedAppleSilicon, .generic: return false
+        // Intel is left off on purpose: fan control keeps using every plausible
+        // CPU reading there, as it does for .generic, until a map is verified.
+        case .unmappedAppleSilicon, .intel, .generic: return false
         }
     }
 
@@ -121,6 +128,12 @@ enum TemperatureSensorSelector {
             return appleM4CPUCoreKeys.contains(key)
         case .appleM5Family:
             return appleM5CPUCoreKeys.contains(key)
+        case .intel:
+            // TC<n>C is one core, TCXC the package via PECI, TC0D/E/F the die.
+            // Proximity sensors (TC0P, TC0H) sit beside the chip and read cooler,
+            // so they stay out of the preferred set and serve only as fallback.
+            return key.range(of: "^TC[0-9]+C$", options: .regularExpression) != nil
+                || ["TCXC", "TC0D", "TC0E", "TC0F"].contains(key)
         case .unmappedAppleSilicon, .generic:
             return false
         }
@@ -128,8 +141,28 @@ enum TemperatureSensorSelector {
 
     static func isCPUTemperatureKey(_ key: String,
                                     platform: CPUTemperaturePlatform) -> Bool {
+        if platform == .intel {
+            // Every four-character TC key is a CPU sensor, except TCGC, which is
+            // the integrated GPU on the same die and is counted as GPU instead.
+            // Tp/Te must NOT match here: on Intel, Tp… is the power supply.
+            return key.range(of: "^TC[0-9A-Z][0-9A-Z]$", options: .regularExpression) != nil
+                && key != "TCGC"
+        }
         if key.hasPrefix("Tp") || key.hasPrefix("Te") { return true }
         return platform == .appleM3Family && key.hasPrefix("Tf")
+    }
+
+    /// GPU temperature keys. Apple Silicon names them Tg…; Intel Macs use TG…
+    /// for a discrete GPU and TCGC for the integrated one.
+    static func isGPUTemperatureKey(_ key: String,
+                                    platform: CPUTemperaturePlatform) -> Bool {
+        // Apple Silicon GPU sensors (Tg0D, Tg0f, …), kept for every platform.
+        if key.hasPrefix("Tg") { return true }
+        // Nothing else counts as GPU outside Intel.
+        guard platform == .intel else { return false }
+        // Intel discrete GPU (TG0D, TG0P, …) or the integrated GPU (TCGC).
+        return key.range(of: "^TG[0-9A-Z][0-9A-Z]$", options: .regularExpression) != nil
+            || key == "TCGC"
     }
 
     static func stabilizedTemperature(_ reading: Double?,

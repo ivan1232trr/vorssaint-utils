@@ -348,7 +348,8 @@ enum FanControlPolicy {
         let cpu: [Double]
         if TemperatureSensorSelector.hasCPUCoreSet(platform: platform) {
             cpu = preferredCPU.map(\.value)
-        } else if platform == .generic {
+        // Intel has no verified core map yet, so it keeps all of its TC readings.
+        } else if platform == .generic || platform == .intel {
             cpu = validCPU.map(\.value)
         } else {
             cpu = []

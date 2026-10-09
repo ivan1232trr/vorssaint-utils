@@ -649,6 +649,44 @@ enum MetricsFeatureTests {
         ) == nil, "A18 Pro remains unavailable when no CPU sensor answers")
         suite.expect(TemperatureSensorSelector.platform(brandString: "Generic CPU") == .generic,
                "other processors keep the generic CPU sensor path")
+
+        // MARK: Intel Macs
+        // Real brand strings from Intel MacBook Pro and Mac Pro machines.
+        suite.expect(TemperatureSensorSelector.platform(brandString: "Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz") == .intel
+                && TemperatureSensorSelector.platform(brandString: "Intel(R) Xeon(R) W-3245 CPU @ 3.20GHz") == .intel,
+               "Intel Core and Xeon brand strings select the Intel sensor path")
+        // TC… keys are the CPU; TCGC is the integrated GPU, not the CPU.
+        suite.expect(TemperatureSensorSelector.isCPUTemperatureKey("TC0P", platform: .intel)
+                && TemperatureSensorSelector.isCPUTemperatureKey("TC1C", platform: .intel)
+                && TemperatureSensorSelector.isCPUTemperatureKey("TCXC", platform: .intel)
+                && !TemperatureSensorSelector.isCPUTemperatureKey("TCGC", platform: .intel),
+               "Intel discovers its TC CPU sensors and leaves the integrated GPU out")
+        // On Intel, Tp… is the power supply, so it must never pass as the CPU.
+        suite.expect(!TemperatureSensorSelector.isCPUTemperatureKey("Tp0P", platform: .intel)
+                && !TemperatureSensorSelector.isCPUTemperatureKey("Te05", platform: .intel),
+               "Intel never reads its power supply sensors as the CPU")
+        // Discrete (TG…) and integrated (TCGC) GPUs both count as GPU on Intel.
+        suite.expect(TemperatureSensorSelector.isGPUTemperatureKey("TG0P", platform: .intel)
+                && TemperatureSensorSelector.isGPUTemperatureKey("TCGC", platform: .intel)
+                && !TemperatureSensorSelector.isGPUTemperatureKey("TC0P", platform: .intel),
+               "Intel GPU keys cover discrete and integrated graphics only")
+        // The uppercase TG pattern stays Intel-only; Apple Silicon keeps Tg….
+        suite.expect(TemperatureSensorSelector.isGPUTemperatureKey("Tg0D", platform: .appleM1Family)
+                && !TemperatureSensorSelector.isGPUTemperatureKey("TG0P", platform: .appleM1Family),
+               "Apple Silicon GPU discovery is unchanged by the Intel rule")
+        // Core/die sensors outrank a hotter-reading proximity sensor beside the chip.
+        suite.expectClose(TemperatureSensorSelector.displayedCPUTemperature(
+            readings: [("TC0P", 80.0), ("TC1C", 62.0), ("TC2C", 66.0)],
+            platform: .intel
+        ) ?? -1, 66.0, "Intel shows its hottest core, not the proximity sensor")
+        // A Mac whose SMC exposes only proximity sensors still shows a value.
+        suite.expectClose(TemperatureSensorSelector.displayedCPUTemperature(
+            readings: [("TC0P", 55.0), ("TC0H", 58.0)],
+            platform: .intel
+        ) ?? -1, 58.0, "an Intel Mac without core sensors falls back to its other TC readings")
+        // Fan control stays conservative: no verified Intel core map yet.
+        suite.expect(!TemperatureSensorSelector.hasCPUCoreSet(platform: .intel),
+               "Intel has no verified core set, so fan control uses every CPU reading")
         suite.expect(TemperatureSensorSelector.isCPUTemperatureKey("Tf4E", platform: .appleM3Family)
                 && !TemperatureSensorSelector.isCPUTemperatureKey("Tf4E", platform: .appleM4Family)
                 && TemperatureSensorSelector.isCPUTemperatureKey("Tp01", platform: .appleM4Family),
