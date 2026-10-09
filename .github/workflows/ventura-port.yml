@@ -57,6 +57,21 @@ jobs:
           # Always succeed here; the final step fails the job if needed.
           exit 0
 
+      # Unit tests run natively on this (newer) Mac and check that the Ventura
+      # helpers left macOS 14+ behaviour intact. Captured like the build.
+      - name: Unit tests
+        id: tests
+        if: steps.build.outputs.status == '0'
+        run: |
+          # Keep going on failure; the exit code is saved below.
+          set +e
+          # Build and run the test suite, keeping a full copy of the output.
+          ./build.sh --test 2>&1 | tee tests.log
+          # Exit code of build.sh --test, from bash's PIPESTATUS.
+          echo "status=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+          # Always succeed here; the final step fails the job if needed.
+          exit 0
+
       # Turn the log into a compact, de-duplicated error list.
       - name: Summarize errors
         if: always()
@@ -69,12 +84,21 @@ jobs:
           grep -E 'only available in macOS|is unavailable in macOS' build.log | sort -u > report/availability.txt || true
           # The end of the log, for failures that are not compiler errors.
           tail -n 200 build.log > report/log-tail.txt
+          # Test verdict, failed checks and test compile errors (empty if tests did not run).
+          if [ -f tests.log ]; then
+            # "TESTS OK (n checks)" or "TESTS FAILED (...)" plus the failure list.
+            grep -E '^TESTS (OK|FAILED)|^  - |: error: ' tests.log > report/tests.txt || true
+            # The end of the test log, for anything the filter above misses.
+            tail -n 120 tests.log > report/tests-tail.txt
+          fi
           # One-line status for a quick check.
           {
             # Build exit code (0 means the app was produced).
             echo "status=${{ steps.build.outputs.status }}"
             # Number of distinct errors.
             echo "errors=$(wc -l < report/errors.txt | tr -d ' ')"
+            # Test exit code (empty when the build failed and tests were skipped).
+            echo "tests=${{ steps.tests.outputs.status }}"
             # Commit that was built.
             echo "commit=${GITHUB_SHA}"
           } > report/status.txt
@@ -114,7 +138,27 @@ jobs:
           # The zipped app from the previous step.
           path: Vorssaint-Ventura-Intel.zip
 
+      # A stable download link: Releases → "Ventura Intel build".
+      - name: Publish release
+        if: steps.build.outputs.status == '0'
+        env:
+          # The gh CLI authenticates with the job's own token.
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Remove the previous build and its tag; ignore "not found" on the first run.
+          gh release delete ventura-build --yes --cleanup-tag || true
+          # Create the release on the commit just built, with the zipped app attached.
+          gh release create ventura-build Vorssaint-Ventura-Intel.zip \
+            --target "$GITHUB_SHA" --prerelease \
+            --title "Ventura Intel build" \
+            --notes "Intel (x86_64) build for macOS 13 Ventura from ${GITHUB_SHA}. Unsigned: right-click the app and choose Open the first time."
+
       # Mark the run red when the build failed, after the report is published.
       - name: Fail on build error
         if: steps.build.outputs.status != '0'
+        run: exit 1
+
+      # Also mark the run red when tests failed (the app is still published above).
+      - name: Fail on test failure
+        if: steps.build.outputs.status == '0' && steps.tests.outputs.status != '0'
         run: exit 1
