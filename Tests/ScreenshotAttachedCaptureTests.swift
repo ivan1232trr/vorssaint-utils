@@ -32,6 +32,9 @@ enum ScreenshotAttachedCaptureTests {
         }
     }
     struct SCContentFilter { let desktopIndependentWindow: Window }
+    /// Production code calls ScreenCaptureCompat (SCScreenshotManager on macOS 14+,
+    /// a one-frame stream on 13); here both names reach the same fake.
+    typealias ScreenCaptureCompat = SCScreenshotManager
     enum SCScreenshotManager {
         struct Request {
             let id: CGWindowID
