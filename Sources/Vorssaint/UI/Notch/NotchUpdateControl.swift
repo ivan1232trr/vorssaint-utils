@@ -28,7 +28,7 @@ struct NotchUpdateControl: View {
                 .lineLimit(1)
             }
             .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
+            .capsuleButtonBorderCompat()
             .controlSize(.small)
             .tint(tint)
             .fixedSize()

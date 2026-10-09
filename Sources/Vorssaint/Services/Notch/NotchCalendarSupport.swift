@@ -102,7 +102,7 @@ enum NotchCalendarSupport {
     }
 
     static func requestFailed(status: EKAuthorizationStatus, hasError: Bool) -> Bool {
-        hasError || ![.fullAccess, .denied, .restricted].contains(status)
+        hasError || !(status.hasFullAccessCompat || [.denied, .restricted].contains(status))
     }
 
     static func isEnabled(in defaults: UserDefaults = .standard) -> Bool {

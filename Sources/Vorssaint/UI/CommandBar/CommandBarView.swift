@@ -196,11 +196,11 @@ struct CommandBarView: View {
             focusSearch()
             service.barDidAppear()
         }
-        .onChange(of: service.presentationID) { _, _ in focusSearch() }
-        .onChange(of: service.mode) { _, _ in focusSearch() }
+        .onChangeCompat(of: service.presentationID) { _, _ in focusSearch() }
+        .onChangeCompat(of: service.mode) { _, _ in focusSearch() }
         // Typing as the drop still falls hurries it, so the bar shows what
         // is being typed right away.
-        .onChange(of: service.query) { _, query in
+        .onChangeCompat(of: service.query) { _, query in
             if !query.isEmpty, service.presentation == .droplet { CommandBarDroplet.shared.hurry() }
         }
     }
@@ -442,7 +442,7 @@ struct CommandBarView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 9)
             }
-            .onChange(of: service.activeCategory) { _, category in
+            .onChangeCompat(of: service.activeCategory) { _, category in
                 // The arrow keys can walk past the edge of the row.
                 withAnimation(.easeOut(duration: 0.12)) {
                     chips.scrollTo(category?.rawValue ?? Self.homeChipID)
@@ -505,7 +505,7 @@ struct CommandBarView: View {
                 .frame(maxHeight: Self.listCeiling)
                 .fixedSize(horizontal: false, vertical: service.rows.count <= 14)
                 .frame(minHeight: service.rows.count > 14 ? Self.listCeiling : nil)
-                .onChange(of: service.selectedIndex) { _, index in
+                .onChangeCompat(of: service.selectedIndex) { _, index in
                     guard service.rows.indices.contains(index) else { return }
                     proxy.scrollTo(service.rows[index].id)
                 }
@@ -1004,11 +1004,10 @@ struct CommandBarView: View {
             Toggle(item.name, isOn: uninstallIncludeBinding(item))
                 .labelsHidden()
                 .toggleStyle(.checkbox)
-                .focusable(interactions: .edit)
-                .onKeyPress(.space) {
+                .focusableEditCompat()
+                .onKeyPressCompat(.space) {
                     let included = uninstaller.items.first(where: { $0.id == item.id })?.include ?? false
                     uninstaller.setInclude(!included, for: item.id)
-                    return .handled
                 }
                 .disabled(uninstaller.isRemoving)
             Image(nsImage: NSWorkspace.shared.icon(forFile: item.url.path))
@@ -1281,12 +1280,12 @@ private struct CommandBarMascot: View {
             .allowsHitTesting(false)
             .accessibilityHidden(true)
             // Its eyes go along what is typed, and come back once typing stops.
-            .onChange(of: service.query) { _, query in
+            .onChangeCompat(of: service.query) { _, query in
                 cue = .look(NotchMascotSupport.readingGaze(for: query))
                 cueID += 1
             }
             // After the look, so results arriving with a keystroke win.
-            .onChange(of: mood) { old, new in
+            .onChangeCompat(of: mood) { old, new in
                 guard NotchMascotSupport.celebrates(from: old, to: new, query: service.query,
                                                     hasResults: !service.rows.isEmpty) else { return }
                 cue = .celebrate

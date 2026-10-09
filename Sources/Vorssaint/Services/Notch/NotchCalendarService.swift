@@ -10,7 +10,7 @@ private actor NotchCalendarReader {
     private lazy var store = EKEventStore()
 
     func read(interval: DateInterval, excluded: Set<String>) -> [NotchCalendarEvent] {
-        guard !Task.isCancelled, EKEventStore.authorizationStatus(for: .event) == .fullAccess else { return [] }
+        guard !Task.isCancelled, EKEventStore.authorizationStatus(for: .event).hasFullAccessCompat else { return [] }
         let calendars = NotchCalendarSupport.calendarsToRead(store.calendars(for: .event), excluded: excluded,
                                                              identifier: \.calendarIdentifier)
         if calendars?.isEmpty == true { return [] }
@@ -33,7 +33,7 @@ private actor NotchCalendarReader {
     }
 
     func calendars() -> [NotchCalendarChoice] {
-        guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else { return [] }
+        guard EKEventStore.authorizationStatus(for: .event).hasFullAccessCompat else { return [] }
         return store.calendars(for: .event).map {
             NotchCalendarChoice(id: $0.calendarIdentifier, title: $0.title,
                                 sourceID: $0.source?.sourceIdentifier ?? "", source: $0.source?.title ?? "",
@@ -145,7 +145,7 @@ final class NotchCalendarService: NSObject, ObservableObject {
         refreshTimer?.invalidate(); refreshTimer = nil
         generation = UUID()
         guard NotchCalendarSupport.isEnabled(), let reader else { stop(); return }
-        guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else {
+        guard EKEventStore.authorizationStatus(for: .event).hasFullAccessCompat else {
             events = []; countdown = nil; loading = false
             return
         }
@@ -165,7 +165,7 @@ final class NotchCalendarService: NSObject, ObservableObject {
             guard !Task.isCancelled, let self, self.generation == requested,
                   NotchCalendarSupport.isEnabled() else { return }
             let now = Date()
-            guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else {
+            guard EKEventStore.authorizationStatus(for: .event).hasFullAccessCompat else {
                 self.events = []; self.countdown = nil; self.loading = false; self.task = nil
                 return
             }

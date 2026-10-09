@@ -42,7 +42,7 @@ struct AppUpdatesSettings: View {
                 }
                 Toggle(text.notifyToggle, isOn: $notify)
                     .disabled(AppUpdatesSupport.CheckFrequency.sanitized(frequencyRaw) == .off)
-                    .onChange(of: notify) { _, value in
+                    .onChangeCompat(of: notify) { _, value in
                         guard value else { return }
                         Notifier.requestPermission()
                     }
@@ -51,12 +51,12 @@ struct AppUpdatesSettings: View {
             Section(text.sourcesTitle) {
                 Toggle(text.includeHomebrewToggle, isOn: $includeHomebrewApps)
                     .disabled(includeHomebrewApps && enabledSourceCount == 1)
-                    .onChange(of: includeHomebrewApps) { _, _ in
+                    .onChangeCompat(of: includeHomebrewApps) { _, _ in
                         updates.sourceSelectionDidChange()
                     }
                 Toggle(text.includeStoreToggle, isOn: $includeAppStore)
                     .disabled(includeAppStore && enabledSourceCount == 1)
-                    .onChange(of: includeAppStore) { _, _ in
+                    .onChangeCompat(of: includeAppStore) { _, _ in
                         updates.sourceSelectionDidChange()
                     }
                 Text(text.includeStoreCaption)
@@ -64,7 +64,7 @@ struct AppUpdatesSettings: View {
                     .foregroundStyle(.secondary)
                 Toggle(text.includeOnlineToggle, isOn: $includeOnlineCatalog)
                     .disabled(includeOnlineCatalog && enabledSourceCount == 1)
-                    .onChange(of: includeOnlineCatalog) { _, _ in
+                    .onChangeCompat(of: includeOnlineCatalog) { _, _ in
                         updates.sourceSelectionDidChange()
                     }
                 Text(text.includeOnlineCaption)

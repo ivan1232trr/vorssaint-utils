@@ -73,7 +73,7 @@ struct ScratchpadView: View {
                 Text(String(format: text.deletePadMessageFormat, pad.name))
             }
         }
-        .onChange(of: service.keyboardCloseSelectedPadSerial) { _, _ in
+        .onChangeCompat(of: service.keyboardCloseSelectedPadSerial) { _, _ in
             guard let selectedPad else { return }
             requestClose(selectedPad)
         }
@@ -96,7 +96,7 @@ struct ScratchpadView: View {
                     guard let selected = service.selectedPadID else { return }
                     proxy.scrollTo(selected, anchor: .center)
                 }
-                .onChange(of: service.selectedPadID) { _, selected in
+                .onChangeCompat(of: service.selectedPadID) { _, selected in
                     guard let selected else { return }
                     withAnimation(.easeOut(duration: 0.15)) {
                         proxy.scrollTo(selected, anchor: .center)

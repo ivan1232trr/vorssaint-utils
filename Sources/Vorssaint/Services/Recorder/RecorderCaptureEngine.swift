@@ -93,17 +93,23 @@ final class RecorderCaptureEngine: NSObject {
         // recording starts. Scaling it into that output makes later window
         // resizes follow the recording instead of leaving an empty frame.
         configuration.scalesToFit = region.windowID != nil
-        configuration.preservesAspectRatio = true
-        configuration.captureResolution = .best
+        if #available(macOS 14.0, *) {
+            // Keep the source's shape and capture at full resolution (macOS 14+ options).
+            configuration.preservesAspectRatio = true
+            configuration.captureResolution = .best
+        }
         // The pointer is drawn by us afterwards, from the track the sampler
         // keeps, so it can be smoothed and pressed. Leaving the system one in
         // the frame would put two pointers in the video.
         configuration.showsCursor = false
-        configuration.shouldBeOpaque = true
+        if #available(macOS 14.0, *) { configuration.shouldBeOpaque = true }
         // Shadows belong to the desktop, not to the thing being recorded, and
         // they would be baked into the frame the background is drawn behind.
-        configuration.ignoreShadowsDisplay = true
-        configuration.ignoreShadowsSingleWindow = true
+        if #available(macOS 14.0, *) {
+            // Shadow suppression options exist only on macOS 14+.
+            configuration.ignoreShadowsDisplay = true
+            configuration.ignoreShadowsSingleWindow = true
+        }
         if region.windowID == nil {
             configuration.sourceRect = Self.sourceRect(for: region)
         }

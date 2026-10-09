@@ -79,7 +79,7 @@ struct PanelClipboardView: View {
             Toggle(text.enable, isOn: $enabled)
                 .toggleStyle(.checkbox)
                 .font(.system(size: 11.5, weight: .medium))
-                .onChange(of: enabled) { _, _ in
+                .onChangeCompat(of: enabled) { _, _ in
                     ClipboardHistoryService.shared.syncWithPreferences()
                 }
             Text(enabled ? text.caption : text.disabled)
@@ -145,7 +145,7 @@ struct PanelClipboardView: View {
                 .frame(maxHeight: 260)
                 // A copied recent entry moves to the top, so the list follows
                 // it and the tick stays in view.
-                .onChange(of: copyCount) { _, _ in
+                .onChangeCompat(of: copyCount) { _, _ in
                     guard let id = copiedID else { return }
                     withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { proxy.scrollTo(id) }
                 }

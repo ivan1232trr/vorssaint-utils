@@ -93,7 +93,7 @@ struct QuitProtectionSettings: View {
 
         Section(shortcut.symbol) {
             Toggle(strings.enabled, isOn: enabled)
-                .onChange(of: enabled.wrappedValue) { _, _ in service.syncWithPreferences() }
+                .onChangeCompat(of: enabled.wrappedValue) { _, _ in service.syncWithPreferences() }
             Text(strings.enabledCaption)
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -103,7 +103,7 @@ struct QuitProtectionSettings: View {
                 Text(strings.doublePress).tag(QuitProtectionMode.doublePress.rawValue)
                 Text(strings.extraModifier).tag(QuitProtectionMode.extraModifier.rawValue)
             }
-            .onChange(of: mode.wrappedValue) { _, _ in service.syncWithPreferences() }
+            .onChangeCompat(of: mode.wrappedValue) { _, _ in service.syncWithPreferences() }
 
             if currentMode == .hold {
                 Slider(value: holdDuration,
@@ -115,7 +115,7 @@ struct QuitProtectionSettings: View {
                 } maximumValueLabel: {
                     Text("2 s").font(.caption2)
                 }
-                .onChange(of: holdDuration.wrappedValue) { _, _ in service.syncWithPreferences() }
+                .onChangeCompat(of: holdDuration.wrappedValue) { _, _ in service.syncWithPreferences() }
                 Text("\(Int(holdDuration.wrappedValue.rounded())) ms")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -131,7 +131,7 @@ struct QuitProtectionSettings: View {
                 } maximumValueLabel: {
                     Text("1.5 s").font(.caption2)
                 }
-                .onChange(of: doubleInterval.wrappedValue) { _, _ in service.syncWithPreferences() }
+                .onChangeCompat(of: doubleInterval.wrappedValue) { _, _ in service.syncWithPreferences() }
                 Text("\(Int(doubleInterval.wrappedValue.rounded())) ms")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -143,7 +143,7 @@ struct QuitProtectionSettings: View {
                     Text("\(strings.optionKey) (⌥)").tag(QuitProtectionExtraModifier.option.rawValue)
                     Text("\(strings.controlKey) (⌃)").tag(QuitProtectionExtraModifier.control.rawValue)
                 }
-                .onChange(of: extraModifier.wrappedValue) { _, _ in service.syncWithPreferences() }
+                .onChangeCompat(of: extraModifier.wrappedValue) { _, _ in service.syncWithPreferences() }
                 Text("\(modifierSymbol(currentModifier))\(shortcut.symbol)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -154,12 +154,12 @@ struct QuitProtectionSettings: View {
                 Text(strings.selectedOnly).tag(QuitProtectionScope.selectedOnly.rawValue)
                 Text(strings.allExceptSelected).tag(QuitProtectionScope.allExceptSelected.rawValue)
             }
-            .onChange(of: scope.wrappedValue) { _, _ in service.syncWithPreferences() }
+            .onChangeCompat(of: scope.wrappedValue) { _, _ in service.syncWithPreferences() }
 
             exceptionsSection(for: shortcut, scope: currentScope, enabled: enabled.wrappedValue)
 
             Toggle(strings.feedback, isOn: showFeedback)
-                .onChange(of: showFeedback.wrappedValue) { _, _ in service.syncWithPreferences() }
+                .onChangeCompat(of: showFeedback.wrappedValue) { _, _ in service.syncWithPreferences() }
         }
     }
 

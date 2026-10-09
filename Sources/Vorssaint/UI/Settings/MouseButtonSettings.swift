@@ -40,7 +40,7 @@ struct MouseButtonShortcutsSection: View {
             SettingsRow(symbol: "computermouse.fill", title: text.enableLabel, caption: text.enableCaption) {
                 Toggle(text.enableLabel, isOn: $enabled)
                     .labelsHidden()
-                    .onChange(of: enabled) { _, on in
+                    .onChangeCompat(of: enabled) { _, on in
                         if !on { stopCapture() }
                         MouseButtonShortcutService.shared.syncWithPreferences()
                         if on, !permissions.accessibility {
@@ -70,7 +70,7 @@ struct MouseButtonShortcutsSection: View {
                         caption: text.spacesEnableCaption) {
                 Toggle(text.spacesEnableLabel, isOn: $spacesEnabled)
                     .labelsHidden()
-                    .onChange(of: spacesEnabled) { _, on in
+                    .onChangeCompat(of: spacesEnabled) { _, on in
                         if !on {
                             stopSpacesCapture()
                             // The row is gone while this switch is off, so a kept

@@ -21,7 +21,7 @@ struct CPUCoreMatrix: View {
         GeometryReader { proxy in
             grid(layout, strings: strings)
                 .onAppear { width = proxy.size.width }
-                .onChange(of: proxy.size.width) { _, value in width = value }
+                .onChangeCompat(of: proxy.size.width) { _, value in width = value }
         }
         .frame(height: height)
         .accessibilityElement(children: .contain)

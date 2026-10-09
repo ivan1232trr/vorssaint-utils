@@ -36,7 +36,7 @@ struct NotchCaptureControlsView: View {
         }
         .padding(.top, layout.headerTop)
         .foregroundStyle(.white)
-        .onChange(of: focusedControl) {
+        .onChangeCompat(of: focusedControl) {
             options.hasFocusedControl = focusedControl != nil
             service.scheduleCaptureControlsCollapse()
         }

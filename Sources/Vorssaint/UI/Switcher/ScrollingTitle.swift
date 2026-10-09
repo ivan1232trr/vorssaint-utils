@@ -93,6 +93,6 @@ struct ScrollingTitle: View {
         .frame(width: width, alignment: .leading)
         .clipped()
         .onAppear { began = Date() }
-        .onChange(of: text) { _, _ in began = Date() }
+        .onChangeCompat(of: text) { _, _ in began = Date() }
     }
 }

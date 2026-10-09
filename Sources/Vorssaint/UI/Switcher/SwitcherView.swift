@@ -182,7 +182,7 @@ struct SwitcherView: View {
                 }
             }
             .scrollDisabled(switcher.grid.rows <= switcher.grid.visibleRows)
-            .onChange(of: switcher.selectedIndex) { _, newIndex in
+            .onChangeCompat(of: switcher.selectedIndex) { _, newIndex in
                 guard switcher.windows.indices.contains(newIndex) else { return }
                 withAnimation(instantSelection ? nil : .easeOut(duration: 0.15)) {
                     proxy.scrollTo(switcher.windows[newIndex].id, anchor: nil)
@@ -335,10 +335,10 @@ struct SwitcherView: View {
                         .frame(width: switcher.iconRowLayout.previewContentWidth,
                                height: SwitcherIconRowLayout.previewCardHeight)
                         .onAppear { revealSelection(in: proxy, animated: false) }
-                        .onChange(of: switcher.selectedIndex) { _, _ in
+                        .onChangeCompat(of: switcher.selectedIndex) { _, _ in
                             revealSelection(in: proxy, animated: true)
                         }
-                        .onChange(of: appWindows.map(\.element.id)) { _, _ in
+                        .onChangeCompat(of: appWindows.map(\.element.id)) { _, _ in
                             revealSelection(in: proxy, animated: true)
                         }
                         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { _ in
@@ -426,10 +426,10 @@ struct SwitcherView: View {
                         .padding(.horizontal, SwitcherIconRowLayout.simpleTitleScrollPadding)
                     }
                     .onAppear { revealSelection(in: proxy, animated: false) }
-                    .onChange(of: switcher.selectedIndex) { _, _ in
+                    .onChangeCompat(of: switcher.selectedIndex) { _, _ in
                         revealSelection(in: proxy, animated: true)
                     }
-                    .onChange(of: appWindows.map(\.element.id)) { _, _ in
+                    .onChangeCompat(of: appWindows.map(\.element.id)) { _, _ in
                         revealSelection(in: proxy, animated: true)
                     }
                     .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { _ in

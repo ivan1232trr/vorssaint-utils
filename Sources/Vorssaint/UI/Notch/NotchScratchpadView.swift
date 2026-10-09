@@ -78,10 +78,10 @@ struct NotchScratchpadView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear { loadFailed = !pad.loadForEmbedding() }
         .onDisappear { pad.commitEdits() }
-        .onChange(of: pad.selectedPadID) { _, _ in
+        .onChangeCompat(of: pad.selectedPadID) { _, _ in
             DispatchQueue.main.async { focusEditor() }
         }
-        .onChange(of: pad.isPreviewing) { _, previewing in
+        .onChangeCompat(of: pad.isPreviewing) { _, previewing in
             guard let view = editor.view else { return }
             if previewing {
                 pad.hideFindBar(in: view)
@@ -100,11 +100,11 @@ struct NotchScratchpadView: View {
                 }
             }
         }
-        .onChange(of: service.scratchpadCloseSerial) { _, _ in
+        .onChangeCompat(of: service.scratchpadCloseSerial) { _, _ in
             guard let selectedPad else { return }
             requestClose(selectedPad)
         }
-        .onChange(of: service.scratchpadFindSerial) { _, _ in
+        .onChangeCompat(of: service.scratchpadFindSerial) { _, _ in
             pad.performFind(service.scratchpadFindAction, in: editor.view)
         }
         .task(id: copied) {
@@ -127,7 +127,7 @@ struct NotchScratchpadView: View {
                 guard let selected = pad.selectedPadID else { return }
                 proxy.scrollTo(selected, anchor: .center)
             }
-            .onChange(of: pad.selectedPadID) { _, selected in
+            .onChangeCompat(of: pad.selectedPadID) { _, selected in
                 guard let selected else { return }
                 withAnimation(.easeOut(duration: 0.15)) { proxy.scrollTo(selected, anchor: .center) }
             }

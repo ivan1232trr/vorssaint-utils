@@ -16,7 +16,10 @@ final class NotchDecorativeClock {
     static let rate: Float = 30
 
     private let step: (CFTimeInterval) -> Void
-    private var link: CADisplayLink?
+    /// The running scheduler: a CADisplayLink on macOS 14+, a Timer on 13.
+    /// Typed as AnyObject because CADisplayLink does not exist on macOS 13;
+    /// both classes respond to invalidate(), which is all `stop` needs.
+    private var link: AnyObject?
 
     /// `step` receives the time the frame being prepared will show at.
     init(step: @escaping (CFTimeInterval) -> Void) {
@@ -27,11 +30,23 @@ final class NotchDecorativeClock {
 
     /// The display link while it runs, so tests can check its rate and that
     /// stopping takes it off the run loop.
-    var displayLink: CADisplayLink? { link }
+    @available(macOS 14.0, *)
+    var displayLink: CADisplayLink? { link as? CADisplayLink }
 
     /// Steps in time with the display that shows `view`.
     func start(in view: NSView) {
         guard link == nil else { return }
+        guard #available(macOS 14.0, *) else {
+            // macOS 13 has no NSView display link: step from a timer at the same rate.
+            let target = Target(clock: self)
+            // The timer holds the target strongly; the target holds the clock weakly.
+            let timer = Timer(timeInterval: 1 / Double(Self.rate), repeats: true) { _ in target.tick() }
+            // Keep stepping during scrolling and menu tracking, like the display link.
+            RunLoop.main.add(timer, forMode: .common)
+            // Remember it so stop() can invalidate it.
+            self.link = timer
+            return
+        }
         let link = view.displayLink(target: Target(clock: self), selector: #selector(Target.fire(_:)))
         link.preferredFrameRateRange = CAFrameRateRange(minimum: Self.rate / 2, maximum: Self.rate,
                                                         preferred: Self.rate)
@@ -51,7 +66,10 @@ final class NotchDecorativeClock {
     private final class Target: NSObject {
         weak var clock: NotchDecorativeClock?
         init(clock: NotchDecorativeClock) { self.clock = clock }
+        @available(macOS 14.0, *)
         @objc func fire(_ link: CADisplayLink) { clock?.step(link.targetTimestamp) }
+        /// macOS 13 timer tick: the next frame shows roughly one step from now.
+        func tick() { clock?.step(CACurrentMediaTime() + 1 / Double(NotchDecorativeClock.rate)) }
     }
 
     /// Where a swing to and fro stands at `phase`, counted in half cycles: 0

@@ -83,7 +83,7 @@ struct FeedbackView: View {
                             }
                         }
                         .frame(minHeight: 145)
-                        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 9))
+                        .secondaryBackgroundCompat(in: RoundedRectangle(cornerRadius: 9))
                         .overlay {
                             RoundedRectangle(cornerRadius: 9)
                                 .strokeBorder(.separator, lineWidth: 1)
@@ -148,7 +148,7 @@ struct FeedbackView: View {
             .padding(.horizontal, 24)
             .padding(.vertical, 16)
         }
-        .onChange(of: message) { oldValue, newValue in
+        .onChangeCompat(of: message) { oldValue, newValue in
             if newValue.utf16.count > 2_000 {
                 var limited = ""
                 var units = 0

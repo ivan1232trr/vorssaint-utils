@@ -991,8 +991,14 @@ private final class NotchBackdropTick: NSObject {
     init(canvas: NotchCanvas) { self.canvas = canvas }
     /// SwiftUI's drawing of what is set now reaches the screen the frame after
     /// the one being prepared, so the material aims one frame further.
+    @available(macOS 14.0, *)
     @objc func fire(_ sender: CADisplayLink) {
         canvas?.advanceBackdrop(to: sender.targetTimestamp + (sender.targetTimestamp - sender.timestamp))
+    }
+    /// macOS 13 timer tick at 60 Hz: the frame being prepared shows one frame from
+    /// now, and the material aims one frame past that, as `fire` does.
+    func tick() {
+        canvas?.advanceBackdrop(to: CACurrentMediaTime() + 2.0 / 60)
     }
 }
 
@@ -1005,7 +1011,9 @@ private final class NotchCanvas: NSView {
     /// the material stayed a frame at its old place when the window grew to
     /// open, cutting the island in half.
     private var stage = CGSize.zero
-    private(set) var backdropDisplayLink: CADisplayLink?
+    /// A CADisplayLink on macOS 14+, a Timer on 13 (CADisplayLink does not exist
+    /// there); both answer invalidate(), and callers only test it for nil.
+    private(set) var backdropDisplayLink: AnyObject?
     private lazy var backdropTick = NotchBackdropTick(canvas: self)
     private(set) var backdropTicks = 0
     private let activationButton = NotchActivationButton()
@@ -1345,9 +1353,20 @@ private final class NotchCanvas: NSView {
         if let from { setBackdropContour(inCanvas(from)) }
         // Only the material follows the display link; content layout and the
         // native window remain fixed for the duration of the animation.
-        let link = displayLink(target: backdropTick, selector: #selector(NotchBackdropTick.fire(_:)))
-        backdropDisplayLink = link
-        link.add(to: .main, forMode: .common)
+        if #available(macOS 14.0, *) {
+            let link = displayLink(target: backdropTick, selector: #selector(NotchBackdropTick.fire(_:)))
+            backdropDisplayLink = link
+            link.add(to: .main, forMode: .common)
+        } else {
+            // macOS 13: no view display link, so tick the material from a 60 Hz timer.
+            let tick = backdropTick
+            // The timer retains the tick object, which holds the canvas weakly.
+            let timer = Timer(timeInterval: 1.0 / 60, repeats: true) { _ in tick.tick() }
+            // Same bookkeeping as the display link: non-nil while the motion runs.
+            backdropDisplayLink = timer
+            // Keep ticking during event tracking.
+            RunLoop.main.add(timer, forMode: .common)
+        }
         if let borderAnimation = animation.copy() as? CAAnimation {
             borderAnimation.delegate = nil
             edge.add(borderAnimation, forKey: Self.motionKey)

@@ -149,10 +149,10 @@ struct NotchAgentsSettingsControls: View {
             // An agent turned off is not read at all, not even for its status.
             if claude { findClaudeApp() }
         }
-        .onChange(of: claude) { _, on in if on { findClaudeApp() } }
+        .onChangeCompat(of: claude) { _, on in if on { findClaudeApp() } }
         // Cards and agents set the page's height, and the live reading the
         // closed island's width, which the island follows.
-        .onChange(of: [cardOrder, hiddenCards, String(claude), String(codex), String(opencode), String(copilot),
+        .onChangeCompat(of: [cardOrder, hiddenCards, String(claude), String(codex), String(opencode), String(copilot),
                        String(liveActivity), readout, limitDisplay, limitFocus]) { _, _ in
             NotchService.shared.syncWithPreferences()
         }

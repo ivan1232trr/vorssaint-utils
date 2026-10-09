@@ -81,7 +81,7 @@ struct EnergySettings: View {
             keepAwakeMouseJiggleInterval = Defaults.sanitizedKeepAwakeMouseJiggleInterval(keepAwakeMouseJiggleInterval)
             refreshVisibleServices()
         }
-        .onChange(of: focus) { _, _ in refreshVisibleServices() }
+        .onChangeCompat(of: focus) { _, _ in refreshVisibleServices() }
     }
 
     private func refreshVisibleServices() {
@@ -301,7 +301,7 @@ struct EnergySettings: View {
             SettingsRow(symbol: "display.2", title: strings.enable, caption: strings.enableCaption) {
                 Toggle(strings.enable, isOn: $brightnessEnabled)
                     .labelsHidden()
-                    .onChange(of: brightnessEnabled) { _, _ in
+                    .onChangeCompat(of: brightnessEnabled) { _, _ in
                         BrightnessService.shared.syncWithPreferences()
                     }
             }
@@ -328,7 +328,7 @@ struct EnergySettings: View {
                                     caption: strings.keysCaption) {
                             Toggle(strings.keysToggle, isOn: $brightnessKeysEnabled)
                                 .labelsHidden()
-                                .onChange(of: brightnessKeysEnabled) { _, isOn in
+                                .onChangeCompat(of: brightnessKeysEnabled) { _, isOn in
                                     if isOn { Permissions.shared.requestAccessibility() }
                                     BrightnessService.shared.syncWithPreferences()
                                 }
@@ -347,7 +347,7 @@ struct EnergySettings: View {
                             SettingsRow(symbol: "sun.max", title: strings.osdToggle, caption: strings.osdCaption) {
                                 Toggle(strings.osdToggle, isOn: $brightnessOSDEnabled)
                                     .labelsHidden()
-                                    .onChange(of: brightnessOSDEnabled) { _, isOn in
+                                    .onChangeCompat(of: brightnessOSDEnabled) { _, isOn in
                                         if isOn { Permissions.shared.requestAccessibility() }
                                         BrightnessService.shared.syncWithPreferences()
                                     }
@@ -430,7 +430,7 @@ struct EnergySettings: View {
                             caption: l10n.s.extraBrightnessCaption) {
                     Toggle(l10n.s.extraBrightnessName, isOn: $extraBrightnessEnabled)
                         .labelsHidden()
-                        .onChange(of: extraBrightnessEnabled) { _, _ in
+                        .onChangeCompat(of: extraBrightnessEnabled) { _, _ in
                             ExtraBrightnessService.shared.syncWithPreferences()
                         }
                 }
@@ -472,7 +472,7 @@ struct EnergySettings: View {
                             caption: strings.enableCaption) {
                     Toggle(strings.enable, isOn: $bluetoothSleepEnabled)
                         .labelsHidden()
-                        .onChange(of: bluetoothSleepEnabled) { _, _ in
+                        .onChangeCompat(of: bluetoothSleepEnabled) { _, _ in
                             BluetoothSleepService.shared.syncWithPreferences()
                         }
                 }

@@ -39,7 +39,7 @@ struct PanelLayoutEditor: View {
             }
         }
         .onAppear { order = PanelLayout.order }
-        .onChange(of: showFanControl) { _, _ in order = PanelLayout.order }
+        .onChangeCompat(of: showFanControl) { _, _ in order = PanelLayout.order }
     }
 
     /// The picture with its one-line caption under it.
@@ -48,7 +48,7 @@ struct PanelLayoutEditor: View {
             MenuBarPanelMiniature(sections: visibleSections, active: previewSection) { id in
                 selected = id
             }
-            .animation(reduceMotion ? nil : .smooth(duration: 0.2), value: visibleSections)
+            .animation(reduceMotion ? nil : .smoothCompat(duration: 0.2), value: visibleSections)
             Text(text.panelReorderHint)
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -205,7 +205,7 @@ private struct PanelSectionRow: View {
                     .toggleStyle(.switch)
                     .controlSize(.small)
                     .disabled(shown && !canHide)
-                    .onChange(of: shown) { _, _ in onVisibilityChange() }
+                    .onChangeCompat(of: shown) { _, _ in onVisibilityChange() }
             }
         }
         .padding(.vertical, 6)

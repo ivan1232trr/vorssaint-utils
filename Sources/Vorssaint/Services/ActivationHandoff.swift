@@ -26,6 +26,8 @@ enum ActivationHandoff {
     static func yield(to app: NSRunningApplication) {
         lastSelfActivation = CFAbsoluteTimeGetCurrent()
         NSApp.activate(ignoringOtherApps: true)
-        NSApp.yieldActivation(to: app)
+        // Cooperative hand-over exists only on macOS 14+; on 13 the target app
+        // takes focus itself via activateFromCurrentCompat.
+        if #available(macOS 14.0, *) { NSApp.yieldActivation(to: app) }
     }
 }

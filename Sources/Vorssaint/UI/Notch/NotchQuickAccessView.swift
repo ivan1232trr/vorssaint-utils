@@ -19,7 +19,7 @@ final class NotchQuickAccessMotion: ObservableObject {
         let values = NotchQuickAccessLayout.placements(configuration, body: body, headerTop: headerTop)
         guard self.configuration != configuration || placements != values else { return }
         let spring = NotchMotion.sideSpring(from: bodyFrame.size, to: body.size)
-        let animation: Animation? = animated && visible ? .spring(duration: spring.duration, bounce: spring.bounce) : nil
+        let animation: Animation? = animated && visible ? .springCompat(duration: spring.duration, bounce: spring.bounce) : nil
         bodyFrame = body
         withAnimation(animation) {
             self.configuration = configuration
@@ -42,9 +42,11 @@ final class NotchQuickAccessMotion: ObservableObject {
         let token = generation
         interactive = false
         let animation: Animation? = animated
-            ? (visible ? .spring(duration: 0.38, bounce: 0.12).delay(delay) : .easeIn(duration: NotchQuickAccessLayout.withdrawalDuration))
+            ? (visible ? .springCompat(duration: 0.38, bounce: 0.12).delay(delay) : .easeIn(duration: NotchQuickAccessLayout.withdrawalDuration))
             : nil
-        withAnimation(animation, completionCriteria: .logicallyComplete) {
+        // macOS 13 has no completion callback; wait roughly the animation's length there.
+        let fallbackDelay = visible ? 0.38 + delay : NotchQuickAccessLayout.withdrawalDuration
+        withAnimationCompat(animation, fallbackDelay: fallbackDelay) {
             progress = visible ? 1 : 0
         } completion: { [weak self] in
             guard let self, self.generation == token else { return }

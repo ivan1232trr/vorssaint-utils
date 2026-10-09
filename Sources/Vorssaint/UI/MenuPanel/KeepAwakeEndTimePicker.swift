@@ -166,8 +166,8 @@ private struct TimeDigitWheel: View {
         .contentShape(Rectangle())
         .onHover { hovering = $0 }
         .focusable()
-        .onKeyPress(.upArrow) { step(-1); return .handled }
-        .onKeyPress(.downArrow) { step(1); return .handled }
+        .onKeyPressCompat(.upArrow) { step(-1) }
+        .onKeyPressCompat(.downArrow) { step(1) }
         .onAppear(perform: installMonitor)
         .onDisappear {
             if let monitor { NSEvent.removeMonitor(monitor) }

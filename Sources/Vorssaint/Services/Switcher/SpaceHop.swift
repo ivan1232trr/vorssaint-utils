@@ -102,8 +102,7 @@ final class SpaceHop {
         // let the travel decide what comes up.
         let appIsAlreadyHere = appHasWindowOnVisibleSpace()
         ActivationHandoff.yield(to: app)
-        if !app.activate(from: NSRunningApplication.current,
-                         options: appIsAlreadyHere ? [] : [.activateAllWindows]) {
+        if !app.activateFromCurrentCompat(options: appIsAlreadyHere ? [] : [.activateAllWindows]) {
             app.activate(options: appIsAlreadyHere ? [] : [.activateAllWindows])
         }
         switch SpaceHopSupport.firstStage(appHasWindowOnVisibleSpace: appIsAlreadyHere) {

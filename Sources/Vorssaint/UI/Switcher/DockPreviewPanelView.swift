@@ -251,7 +251,7 @@ private struct DockPreviewPanelContent: View {
                 .accessibilityLabel(l10n.s.dockPreviewClosePanel)
             }
         }
-        .focusEffectDisabled()
+        .focusEffectDisabledCompat()
         .padding(.horizontal, DockPreviewSupport.panelPadding)
         .frame(height: DockPreviewSupport.panelHeaderHeight)
     }

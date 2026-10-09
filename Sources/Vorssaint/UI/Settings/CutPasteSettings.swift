@@ -34,7 +34,7 @@ struct CutPasteSettings: View {
             if AppFeature.finderCutPaste.isAvailable {
                 Section {
                     Toggle(l10n.s.cutPasteEnable, isOn: $enabled)
-                        .onChange(of: enabled) { _, _ in
+                        .onChangeCompat(of: enabled) { _, _ in
                             FinderCutPaste.shared.syncWithPreferences()
                         }
                     Text(l10n.s.cutPasteEnableCaption)
@@ -42,7 +42,7 @@ struct CutPasteSettings: View {
                         .foregroundStyle(.secondary)
                     if enabled {
                         Toggle(l10n.s.cutPasteShowHUD, isOn: $showHUD)
-                            .onChange(of: showHUD) { _, _ in
+                            .onChangeCompat(of: showHUD) { _, _ in
                                 FinderCutPaste.shared.syncWithPreferences()
                             }
                         Text(l10n.s.cutPasteShowHUDCaption)
@@ -69,7 +69,7 @@ struct CutPasteSettings: View {
             if AppFeature.finderRename.isAvailable {
                 Section {
                     Toggle(renameText.enableLabel, isOn: $renameEnabled)
-                        .onChange(of: renameEnabled) { _, _ in
+                        .onChangeCompat(of: renameEnabled) { _, _ in
                             FinderRenameService.shared.syncWithPreferences()
                         }
                     Text(renameText.caption)
@@ -146,7 +146,7 @@ struct CutPasteSettings: View {
             }
         }
         .formStyle(.grouped)
-        .onChange(of: l10n.language) { _, _ in renameError = nil }
+        .onChangeCompat(of: l10n.language) { _, _ in renameError = nil }
     }
 
     private func howRow(keys: [String], text: String) -> some View {

@@ -57,7 +57,7 @@ enum ScreenshotCaptureEngine {
         }
 
         func image() async -> CGImage? {
-            try? await SCScreenshotManager.captureImage(contentFilter: filter,
+            try? await ScreenCaptureCompat.captureImage(contentFilter: filter,
                                                        configuration: configuration)
         }
     }
@@ -158,7 +158,7 @@ enum ScreenshotCaptureEngine {
         configuration.height = max(1, Int((CGFloat(display.height) * scale).rounded()))
         configuration.showsCursor = includePointer
         configuration.colorSpaceName = CGColorSpace.sRGB
-        return try? await SCScreenshotManager.captureImage(contentFilter: filter,
+        return try? await ScreenCaptureCompat.captureImage(contentFilter: filter,
                                                            configuration: configuration)
     }
 
@@ -224,11 +224,11 @@ enum ScreenshotCaptureEngine {
         // its automatic setting may render below the window's own scale and
         // stretch the result to the size asked for. The recorder already asks
         // for the best one; this is the screenshot tool's only window stream.
-        configuration.captureResolution = .best
+        if #available(macOS 14.0, *) { configuration.captureResolution = .best }
         configuration.showsCursor = false
         configuration.colorSpaceName = CGColorSpace.sRGB
         let filter = SCContentFilter(desktopIndependentWindow: window)
-        let capture = try? await SCScreenshotManager.captureImage(contentFilter: filter,
+        let capture = try? await ScreenCaptureCompat.captureImage(contentFilter: filter,
                                                                   configuration: configuration)
         return (capture ?? clippedFallback).map { ($0, scale) }
     }
@@ -343,12 +343,14 @@ enum ScreenshotCaptureEngine {
         else { return nil }
         let filter = SCContentFilter(display: display, including: windows)
         let configuration = SCStreamConfiguration()
-        let pixelScale = CGFloat(filter.pointPixelScale)
+        // The filter reports its scale on macOS 14+; on 13 the display's backing scale is the same value.
+        let pixelScale: CGFloat
+        if #available(macOS 14.0, *) { pixelScale = CGFloat(filter.pointPixelScale) } else { pixelScale = screen.backingScaleFactor }
         configuration.width = max(1, Int((CGFloat(display.width) * pixelScale).rounded()))
         configuration.height = max(1, Int((CGFloat(display.height) * pixelScale).rounded()))
         configuration.showsCursor = false
         configuration.colorSpaceName = CGColorSpace.sRGB
-        guard let image = try? await SCScreenshotManager.captureImage(contentFilter: filter,
+        guard let image = try? await ScreenCaptureCompat.captureImage(contentFilter: filter,
                                                                       configuration: configuration)
         else { return nil }
         let cocoaBounds = ScreenshotSupport.cocoaRect(fromWindowServer: plan.bounds,
@@ -412,13 +414,13 @@ enum ScreenshotCaptureEngine {
             let configuration = SCStreamConfiguration()
             configuration.width = max(1, Int((frame.width * scale).rounded()))
             configuration.height = max(1, Int((frame.height * scale).rounded()))
-            configuration.captureResolution = .best
+            if #available(macOS 14.0, *) { configuration.captureResolution = .best }
             configuration.showsCursor = false
             configuration.colorSpaceName = CGColorSpace.sRGB
             // A desktop-independent window may extend beyond its source display.
             // Requested dimensions alone do not restore pixels clipped there.
-            configuration.ignoreGlobalClipSingleWindow = true
-            return try? await SCScreenshotManager.captureImage(
+            if #available(macOS 14.0, *) { configuration.ignoreGlobalClipSingleWindow = true }
+            return try? await ScreenCaptureCompat.captureImage(
                 contentFilter: SCContentFilter(desktopIndependentWindow: window), configuration: configuration)
         }
 

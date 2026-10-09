@@ -128,7 +128,7 @@ struct GeneralSettings: View {
                 Toggle(l10n.s.hotkeyToggle, isOn: $hotkeyEnabled)
                     .labelsHidden()
                     .toggleStyle(.switch)
-                    .onChange(of: hotkeyEnabled) { _, enabled in
+                    .onChangeCompat(of: hotkeyEnabled) { _, enabled in
                         HotkeyManager.shared.setEnabled(enabled)
                     }
             }

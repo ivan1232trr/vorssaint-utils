@@ -125,7 +125,7 @@ struct NotchLayoutEditor: View {
                 .coordinateSpace(name: "island.editor")
             }
             .frame(height: Self.canvasHeight)
-            .animation(reduceMotion ? nil : .smooth(duration: 0.2), value: layout)
+            .animation(reduceMotion ? nil : .smoothCompat(duration: 0.2), value: layout)
             Text(editor.layoutHint).font(.callout).foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -222,7 +222,7 @@ struct NotchLayoutEditor: View {
             VStack(alignment: .leading, spacing: 14) {
                 Text(editor.editButton).font(.headline)
                 TextField(editor.buttonName, text: $editingName, prompt: Text(button.action?.title(l10n) ?? ""))
-                    .onChange(of: editingName) { _, value in
+                    .onChangeCompat(of: editingName) { _, value in
                         if let index = configuration.buttons.firstIndex(where: { $0.id == button.id }) { configuration.buttons[index].label = value }
                     }
                 Picker(editor.position, selection: Binding(get: {

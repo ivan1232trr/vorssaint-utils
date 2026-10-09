@@ -83,7 +83,7 @@ struct NotchKeepAwakeStrip: View {
             .lineLimit(1).minimumScaleFactor(0.65)
             // A reading that gains or loses a character, like 10m becoming
             // 9m, resizes the wings; the service measures the same reading.
-            .onChange(of: NotchAgentSupport.readingShape(text)) { _, _ in
+            .onChangeCompat(of: NotchAgentSupport.readingShape(text)) { _, _ in
                 DispatchQueue.main.async { service.refreshPresentation() }
             }
     }

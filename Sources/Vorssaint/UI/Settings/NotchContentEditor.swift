@@ -38,13 +38,13 @@ struct NotchIslandPreview: View {
 
     var body: some View {
         previewSurface
-            .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: module)
+            .animation(reduceMotion ? nil : .smoothCompat(duration: 0.25), value: module)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(editor.preview)
             .accessibilityValue(module.title(l10n.language) + (hidden ? ", " + editor.hiddenInIsland : ""))
             .onAppear { monitor(windowVisible && module == .system) }
-            .onChange(of: module) { _, value in monitor(windowVisible && value == .system) }
-            .onChange(of: windowVisible) { _, visible in monitor(visible && module == .system) }
+            .onChangeCompat(of: module) { _, value in monitor(windowVisible && value == .system) }
+            .onChangeCompat(of: windowVisible) { _, visible in monitor(visible && module == .system) }
             .onDisappear { monitor(false) }
     }
 

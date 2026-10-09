@@ -288,7 +288,7 @@ final class CameraPreviewService: ObservableObject {
 
     private func refreshDevices() {
         let discovery = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [.builtInWideAngleCamera, .external, .continuityCamera],
+            deviceTypes: CameraDeviceTypesCompat.video,
             mediaType: .video,
             position: .unspecified
         )

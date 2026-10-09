@@ -357,11 +357,11 @@ private struct MenuBarMetricTiles: View {
             .monitorTokenGroup()
         }
         .onAppear { order = MenuBarMetric.order(in: .standard) }
-        .onChange(of: order) { _, order in
+        .onChangeCompat(of: order) { _, order in
             // Only a drag writes; reloading the saved order must not.
             if order != MenuBarMetric.order(in: .standard) { MenuBarMetric.setOrder(order) }
         }
-        .onChange(of: metricOrder) { _, _ in order = MenuBarMetric.order(in: .standard) }
+        .onChangeCompat(of: metricOrder) { _, _ in order = MenuBarMetric.order(in: .standard) }
     }
 
     /// Metrics whose family left the hub keep their saved slot but stay out

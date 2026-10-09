@@ -75,7 +75,7 @@ private struct SettingsSectionFocusModifier: ViewModifier {
                 .onAppear {
                     consumePendingRequest(using: proxy)
                 }
-                .onChange(of: router.requestID) { _, _ in
+                .onChangeCompat(of: router.requestID) { _, _ in
                     consumePendingRequest(using: proxy)
                 }
         }

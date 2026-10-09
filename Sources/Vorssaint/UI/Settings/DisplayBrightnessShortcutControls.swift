@@ -31,7 +31,7 @@ struct DisplayBrightnessShortcutControls: View {
                 }
             }
         }
-        .onChange(of: enabled) { _, _ in brightness.syncWithPreferences() }
+        .onChangeCompat(of: enabled) { _, _ in brightness.syncWithPreferences() }
         if showsShortcutRows, enabled {
             ForEach([GlobalShortcutRole.displayBrightnessDecrease, .displayBrightnessIncrease]) { role in
                 ShortcutPreferenceRow(role: role, isEnabled: enabled, label: role.title(l10n.s),

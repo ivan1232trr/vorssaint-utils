@@ -207,7 +207,7 @@ struct RadialMenuSettings: View {
                              },
                              delete: isNew ? nil : { remove(id: item.id) })
         }
-        .onChange(of: enabled) { _, on in
+        .onChangeCompat(of: enabled) { _, on in
             RadialMenuService.shared.syncWithPreferences()
             requestAccessibilityIfNeeded(on)
         }
@@ -974,7 +974,7 @@ private struct RadialItemEditor: View {
         case .url:
             VStack(alignment: .leading, spacing: 6) {
                 TextField(text.kindURL, text: $item.payload, prompt: Text(text.urlPlaceholder))
-                    .onChange(of: item.payload) { _, _ in
+                    .onChangeCompat(of: item.payload) { _, _ in
                         faviconStatus = nil
                     }
 

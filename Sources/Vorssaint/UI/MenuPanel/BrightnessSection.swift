@@ -45,7 +45,7 @@ struct BrightnessSection: View {
                         .toggleStyle(.switch)
                         .controlSize(.mini)
                         .help(strings.osdCaption)
-                        .onChange(of: brightnessOSDEnabled) { _, isOn in
+                        .onChangeCompat(of: brightnessOSDEnabled) { _, isOn in
                             if isOn { permissions.requestAccessibility() }
                             service.syncWithPreferences()
                         }
@@ -88,7 +88,7 @@ struct BrightnessSection: View {
             if optionsExpanded {
                 VStack(alignment: .leading, spacing: 8) {
                     Toggle(strings.keysToggle, isOn: $brightnessKeysEnabled)
-                        .onChange(of: brightnessKeysEnabled) { _, isOn in
+                        .onChangeCompat(of: brightnessKeysEnabled) { _, isOn in
                             if isOn { permissions.requestAccessibility() }
                             service.syncWithPreferences()
                         }
@@ -196,7 +196,7 @@ private struct ExtraBrightnessPanelToggle: View {
             .controlSize(.mini)
             .disabled(!service.supported && !enabled)
             .help(service.supported ? l10n.s.extraBrightnessCaption : l10n.s.extraBrightnessUnsupported)
-            .onChange(of: enabled) { _, _ in service.syncWithPreferences() }
+            .onChangeCompat(of: enabled) { _, _ in service.syncWithPreferences() }
             .onAppear { service.syncWithPreferences() }
     }
 }

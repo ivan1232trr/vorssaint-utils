@@ -37,7 +37,7 @@ struct KillProcessView: View {
             updateTimer(for: controlActiveState)
         }
         .onDisappear { stopTimer() }
-        .onChange(of: controlActiveState) { _, newValue in
+        .onChangeCompat(of: controlActiveState) { _, newValue in
             updateTimer(for: newValue)
         }
         .alert(alertTitle,

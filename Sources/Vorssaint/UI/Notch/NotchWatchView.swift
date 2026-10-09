@@ -21,7 +21,7 @@ struct NotchWatchSettingsControls: View {
                 PermissionRow(kind: .screenRecording)
             }
         }
-        .onChange(of: enabled) { NotchService.shared.syncWithPreferences() }
+        .onChangeCompat(of: enabled) { NotchService.shared.syncWithPreferences() }
     }
 }
 
@@ -237,7 +237,7 @@ private struct NotchWatchRuleRow: View {
             .font(.system(size: 12))
             .focused($focused)
             .onSubmit(apply)
-            .onChange(of: focused) { _, isFocused in if !isFocused { apply() } }
+            .onChangeCompat(of: focused) { _, isFocused in if !isFocused { apply() } }
             .padding(.horizontal, 8)
             .frame(height: 24)
             .frame(maxWidth: 180)
@@ -308,7 +308,7 @@ private struct NotchWatchSetupView: View {
             if AppFeature.notchWatch.isAvailable {
                 Toggle(text.title, isOn: $enabled)
                     .toggleStyle(.switch)
-                    .onChange(of: enabled) { NotchService.shared.syncWithPreferences() }
+                    .onChangeCompat(of: enabled) { NotchService.shared.syncWithPreferences() }
             }
         } else if !permissions.screenRecording {
             NotchPillButton(title: text.allowAccess, prominent: true) {

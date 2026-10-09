@@ -72,7 +72,7 @@ struct ShortcutsSettings: View {
         }
         .formStyle(.grouped)
         .onAppear { revealKeyboardBrightnessShortcuts() }
-        .onChange(of: router.requestID) { _, _ in revealKeyboardBrightnessShortcuts() }
+        .onChangeCompat(of: router.requestID) { _, _ in revealKeyboardBrightnessShortcuts() }
         .sheet(isPresented: $showsAppShortcuts) {
             CommandBarAppShortcutsView()
         }
@@ -290,7 +290,7 @@ private struct KeyboardBrightnessShortcutToggle: View {
     var body: some View {
         Toggle(FeatureStrings.brightness(l10n.language).keyboardBrightnessShortcuts,
                isOn: $isEnabled)
-            .onChange(of: isEnabled) { _, _ in
+            .onChangeCompat(of: isEnabled) { _, _ in
                 brightness.syncWithPreferences()
             }
         if isEnabled, brightness.keyboardBrightnessShortcutRegistrationFailed {
@@ -456,7 +456,7 @@ private struct CentralWindowLayoutShortcutRow: View {
                 )
             }
         }
-        .onChange(of: l10n.language) { _, _ in errorText = nil }
+        .onChangeCompat(of: l10n.language) { _, _ in errorText = nil }
     }
 
     private var shortcut: GlobalShortcut? {

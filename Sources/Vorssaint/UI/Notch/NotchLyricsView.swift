@@ -85,7 +85,7 @@ struct NotchLyricsView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .onChange(of: online) { update() }
+        .onChangeCompat(of: online) { update() }
     }
 
     private func update() { service.update(playback: playback, visible: true) }
@@ -128,7 +128,7 @@ struct NotchLyricsView: View {
                             Text(line.text.isEmpty ? "♪" : line.text)
                                 .font(.system(size: 17, weight: .bold))
                                 .foregroundStyle(.white.opacity(index == active ? 1 : 0.35))
-                                .animation(reduceMotion ? nil : .smooth(duration: 0.28), value: index == active)
+                                .animation(reduceMotion ? nil : .smoothCompat(duration: 0.28), value: index == active)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .id(index)
@@ -136,8 +136,8 @@ struct NotchLyricsView: View {
                     }.padding(.vertical, 6)
                 }
                 .notchScrollEdgeFade(length: 24)
-                .onChange(of: active, initial: true) { _, index in
-                    withAnimation(reduceMotion ? nil : .smooth(duration: 0.28)) {
+                .onChangeCompat(of: active, initial: true) { _, index in
+                    withAnimation(reduceMotion ? nil : .smoothCompat(duration: 0.28)) {
                         if let index { proxy.scrollTo(index, anchor: .center) }
                         else { proxy.scrollTo("start", anchor: .top) }
                     }

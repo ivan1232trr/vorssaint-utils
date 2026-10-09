@@ -58,15 +58,15 @@ struct QuickLauncherView: View {
         .frame(width: notchSize?.width ?? 420)
         .background { if notchSize == nil { HUDBackdrop(cornerRadius: 22, contrast: .high) } }
         .clipShape(RoundedRectangle(cornerRadius: notchSize == nil ? 22 : 0, style: .continuous))
-        .onChange(of: features.revision, initial: true) { launcher.refreshAvailability() }
-        .onChange(of: launcher.presentationID) { _, _ in
+        .onChangeCompat(of: features.revision, initial: true) { launcher.refreshAvailability() }
+        .onChangeCompat(of: launcher.presentationID) { _, _ in
             hoveredItem = nil
             draggingItem = nil
         }
-        .onChange(of: launcher.activeUtility) { _, _ in
+        .onChangeCompat(of: launcher.activeUtility) { _, _ in
             launcher.refreshPanelLayout()
         }
-        .onChange(of: launcher.isEditing) { _, _ in
+        .onChangeCompat(of: launcher.isEditing) { _, _ in
             launcher.editingOptionsItem = nil
             launcher.refreshPanelLayout()
         }
@@ -74,13 +74,13 @@ struct QuickLauncherView: View {
         // by hand (no autoresizing window): recompute after open and close,
         // and also when rows inside the card appear or disappear (the
         // clipboard limit picker and the bare-hex toggle are conditional).
-        .onChange(of: launcher.editingOptionsItem) { _, _ in
+        .onChangeCompat(of: launcher.editingOptionsItem) { _, _ in
             launcher.refreshPanelLayout()
         }
-        .onChange(of: clipboardEnabled) { _, _ in
+        .onChangeCompat(of: clipboardEnabled) { _, _ in
             launcher.refreshPanelLayout()
         }
-        .onChange(of: colorFormat) { _, _ in
+        .onChangeCompat(of: colorFormat) { _, _ in
             launcher.refreshPanelLayout()
         }
     }
@@ -433,7 +433,7 @@ struct QuickLauncherView: View {
                 Toggle(FeatureStrings.clipboard(l10n.language).enable, isOn: $clipboardEnabled)
                     // Same sync the Settings toggle performs: writing the
                     // default alone does not start or stop the watcher.
-                    .onChange(of: clipboardEnabled) { _, _ in
+                    .onChangeCompat(of: clipboardEnabled) { _, _ in
                         ClipboardHistoryService.shared.syncWithPreferences()
                     }
                 if clipboardEnabled {
@@ -442,7 +442,7 @@ struct QuickLauncherView: View {
                             Text(value == 0 ? FeatureStrings.clipboard(l10n.language).limitUnlimited : "\(value)").tag(value)
                         }
                     }
-                    .onChange(of: clipboardLimit) { _, value in
+                    .onChangeCompat(of: clipboardLimit) { _, value in
                         let sanitized = Defaults.sanitizedClipboardHistoryLimit(value)
                         if sanitized != value { clipboardLimit = sanitized }
                         ClipboardHistoryService.shared.trimToLimit()

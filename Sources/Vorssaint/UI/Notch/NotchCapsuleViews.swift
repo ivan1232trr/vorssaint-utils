@@ -375,7 +375,7 @@ struct NotchCapsuleTimerStrip: View {
             .modifier(NotchRollingDigits(value: text, countsDown: !timer.session.countsUp, everySecond: false))
             // A reading that gains or loses a character, like 10m becoming
             // 9m, resizes the capsule; the service measures the same reading.
-            .onChange(of: NotchAgentSupport.readingShape(text)) { _, _ in
+            .onChangeCompat(of: NotchAgentSupport.readingShape(text)) { _, _ in
                 DispatchQueue.main.async { service.refreshPresentation() }
             }
     }
@@ -468,7 +468,7 @@ struct NotchCapsuleAgentStrip: View {
                         .lineLimit(1).fixedSize()
                         // A reading that gains a digit, like an hour passing,
                         // widens the capsule; the service measures the same.
-                        .onChange(of: NotchAgentSupport.readingShape(text)) { _, _ in
+                        .onChangeCompat(of: NotchAgentSupport.readingShape(text)) { _, _ in
                             DispatchQueue.main.async { service.refreshPresentation() }
                         }
                 }
@@ -698,7 +698,7 @@ struct NotchCapsuleKeepAwakeStrip: View {
                         .lineLimit(1).fixedSize()
                         // A reading that gains or loses a character, like 10m
                         // becoming 9m, resizes the capsule; the service measures the same.
-                        .onChange(of: NotchAgentSupport.readingShape(text)) { _, _ in
+                        .onChangeCompat(of: NotchAgentSupport.readingShape(text)) { _, _ in
                             DispatchQueue.main.async { service.refreshPresentation() }
                         }
                 } else {

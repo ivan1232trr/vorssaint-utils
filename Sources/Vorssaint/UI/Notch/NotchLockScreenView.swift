@@ -57,9 +57,9 @@ struct NotchLockScreenIsland: View {
                     Image(systemName: model.padlockOpen ? "lock.open.fill" : "lock.fill")
                         .font(.system(size: min(13, size.height * 0.42), weight: .semibold))
                         .foregroundStyle(.white)
-                        .contentTransition(.symbolEffect(.replace))
-                        .symbolEffect(.bounce, options: .speed(1.4), value: reduceMotion ? false : model.padlockOpen)
-                        .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: model.padlockOpen)
+                        .symbolReplaceTransitionCompat()
+                        .bounceEffectCompat(value: reduceMotion ? false : model.padlockOpen, speed: 1.4)
+                        .animation(reduceMotion ? nil : .smoothCompat(duration: 0.25), value: model.padlockOpen)
                         .frame(width: padlockSide, height: padlockSide)
                         .padding(.leading, max(0, min(geometry.compactMusicArtworkInset, wing - padlockSide)))
                         .frame(width: wing, height: size.height, alignment: .leading)
@@ -68,7 +68,7 @@ struct NotchLockScreenIsland: View {
                                        barWidth: NotchLayout.compactMusicBarWidth, height: geometry.compactMusicBarHeight,
                                        tint: music.artworkTint?.color ?? .white)
                         .opacity(playing ? 1 : 0)
-                        .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: playing)
+                        .animation(reduceMotion ? nil : .smoothCompat(duration: 0.3), value: playing)
                         .padding(.trailing, max(0, min(geometry.compactMusicBarsInset, wing - NotchLayout.compactMusicBarsWidth)))
                         .frame(width: wing, height: size.height, alignment: .trailing)
                 }
@@ -175,13 +175,13 @@ struct NotchLockScreenPlayer: View {
             }
         }
         .frame(width: size.width, height: size.height)
-        .animation(reduceMotion ? nil : .smooth(duration: 0.5), value: shown)
+        .animation(reduceMotion ? nil : .smoothCompat(duration: 0.5), value: shown)
         // A second tap before the player answers asks for the state after it,
         // so only the player reaching what was asked ends the early word.
-        .onChange(of: music.playback?.isPlaying) {
+        .onChangeCompat(of: music.playback?.isPlaying) {
             if music.playback?.isPlaying == requestedPlaying { requestedPlaying = nil }
         }
-        .onChange(of: music.playback?.track) { requestedPlaying = nil }
+        .onChangeCompat(of: music.playback?.track) { requestedPlaying = nil }
         // A player that never answers leaves the button as it was.
         .task(id: requestedPlaying) {
             guard requestedPlaying != nil else { return }
@@ -238,7 +238,7 @@ struct NotchLockScreenPlayer: View {
         NotchArtwork(image: music.artwork, size: size)
             .shadow(color: (music.artworkTint?.color ?? .black).opacity(0.5), radius: size * 0.28, y: size * 0.1)
             .scaleEffect(playback.isPlaying || reduceMotion ? 1 : 0.92)
-            .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: playback.isPlaying)
+            .animation(reduceMotion ? nil : .smoothCompat(duration: 0.35), value: playback.isPlaying)
     }
 
     /// The player's own buttons, never a permission prompt: a request made
@@ -269,8 +269,8 @@ struct NotchLockScreenPlayer: View {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .semibold))
                 .foregroundStyle(.white)
-                .contentTransition(.symbolEffect(.replace))
-                .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: symbol)
+                .symbolReplaceTransitionCompat()
+                .animation(reduceMotion ? nil : .smoothCompat(duration: 0.22), value: symbol)
                 .frame(width: 48, height: 44)
                 .contentShape(RoundedRectangle(cornerRadius: 14))
         }
@@ -319,7 +319,7 @@ struct NotchLockScreenActivities: View {
                 line(Array(items.prefix(1)), at: context.date)
             }
             .frame(width: size.width, height: size.height)
-            .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: items)
+            .animation(reduceMotion ? nil : .smoothCompat(duration: 0.35), value: items)
         }
         .allowsHitTesting(false)
     }

@@ -85,7 +85,7 @@ struct ScreenRecordingCaptureSettings: View {
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Toggle(strings.microphoneToggle, isOn: $microphone)
-                        .onChange(of: microphone) { _, enabled in
+                        .onChangeCompat(of: microphone) { _, enabled in
                             if enabled, permissions.microphone == .undetermined {
                                 permissions.requestMicrophone()
                             }
@@ -316,7 +316,7 @@ private struct RecorderSharedLinksView: View {
             Divider()
 
             if sharing.records.isEmpty {
-                ContentUnavailableView(strings.sharedLinksEmpty,
+                EmptyStateCompat(strings.sharedLinksEmpty,
                                        systemImage: "link.badge.plus")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {

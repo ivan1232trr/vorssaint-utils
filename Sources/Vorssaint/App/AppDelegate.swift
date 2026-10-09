@@ -444,7 +444,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
         // and now through the safe area the popover publishes, so only the surface
         // reaches the arrow. Before macOS 26 AppKit does not lay full-size content
         // out, so the panel keeps the inset content there.
-        popover.hasFullSizeContent = PanelSurface.popoverHostsFullSizeContent
+        // The property only exists on macOS 14+; Ventura keeps the inset layout.
+        if #available(macOS 14.0, *) {
+            popover.hasFullSizeContent = PanelSurface.popoverHostsFullSizeContent
+        }
         popover.delegate = self
         let host = NSHostingController(rootView: MenuPanelView())
         host.sizingOptions = .preferredContentSize
@@ -1377,7 +1380,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
                   !self.handbackWouldSwitchDesktop(to: source.processIdentifier)
             else { return }
             ActivationHandoff.yield(to: source)
-            if !source.activate(from: NSRunningApplication.current, options: []) {
+            if !source.activateFromCurrentCompat(options: []) {
                 source.activate(options: [])
             }
         }

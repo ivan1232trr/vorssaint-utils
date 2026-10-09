@@ -14,7 +14,7 @@ struct AutoQuitSettings: View {
         Form {
             Section {
                 Toggle(l10n.s.autoQuitEnable, isOn: $enabled)
-                    .onChange(of: enabled) { _, _ in
+                    .onChangeCompat(of: enabled) { _, _ in
                         AutoQuitService.shared.syncWithPreferences()
                     }
                 Text(l10n.s.autoQuitEnableCaption)

@@ -65,16 +65,16 @@ struct WallpaperSection: View {
                 isRemovingSources = false
                 service.endViewing(viewerID)
             }
-            .onChange(of: currentPage) { _, newPage in
+            .onChangeCompat(of: currentPage) { _, newPage in
                 service.preparePageThumbs(for: service.filter, around: newPage)
             }
-            .onChange(of: service.filter) { _, _ in
+            .onChangeCompat(of: service.filter) { _, _ in
                 page = 1
             }
-            .onChange(of: service.entries.count) { _, _ in
+            .onChangeCompat(of: service.entries.count) { _, _ in
                 page = WallpaperSupport.clampedPage(page, itemCount: allItems.count)
             }
-            .onChange(of: service.ownSources.count) { _, count in
+            .onChangeCompat(of: service.ownSources.count) { _, count in
                 if count == 0 {
                     isRemovingSources = false
                 }

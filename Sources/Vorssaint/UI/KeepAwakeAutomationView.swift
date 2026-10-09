@@ -52,7 +52,7 @@ struct KeepAwakeAutomationEditor: View {
                 .labelsHidden()
                 .controlSize(compact ? .small : .regular)
                 .font(.system(size: compact ? 10 : 12, weight: .medium))
-                .onChange(of: requireAll) { _, _ in
+                .onChangeCompat(of: requireAll) { _, _ in
                     awake.automationPreferencesDidChange()
                 }
             }

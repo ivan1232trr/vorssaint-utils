@@ -79,7 +79,7 @@ struct DockSettings: View {
             SettingsRow(symbol: "dock.rectangle", title: l10n.s.dockPreviewEnable, caption: dockPreviewCaption) {
                 Toggle(l10n.s.dockPreviewEnable, isOn: $dockPreviewEnabled)
                     .labelsHidden()
-                    .onChange(of: dockPreviewEnabled) { _, _ in
+                    .onChangeCompat(of: dockPreviewEnabled) { _, _ in
                         DockPreviewService.shared.syncWithPreferences()
                     }
             }
@@ -88,7 +88,7 @@ struct DockSettings: View {
                             caption: l10n.s.dockPreviewCurrentSpaceOnlyCaption) {
                     Toggle(l10n.s.switcherCurrentSpaceOnly, isOn: $dockPreviewCurrentSpaceOnly)
                         .labelsHidden()
-                        .onChange(of: dockPreviewCurrentSpaceOnly) { _, _ in
+                        .onChangeCompat(of: dockPreviewCurrentSpaceOnly) { _, _ in
                             DockPreviewService.shared.syncWithPreferences()
                         }
                 }
@@ -133,7 +133,7 @@ struct DockSettings: View {
                         Toggle(l10n.s.dockPreviewKeepDockVisible, isOn: $dockPreviewKeepDockVisible)
                             .labelsHidden()
                             .disabled(!DockAutohideHold.isSupported && !dockPreviewKeepDockVisible)
-                            .onChange(of: dockPreviewKeepDockVisible) { _, _ in
+                            .onChangeCompat(of: dockPreviewKeepDockVisible) { _, _ in
                                 dockPreview.syncWithPreferences()
                             }
                     }
@@ -156,7 +156,7 @@ struct DockSettings: View {
                         caption: l10n.s.dockClickMinimizeCaption) {
                 Toggle(l10n.s.dockClickMinimize, isOn: $dockClickMinimize)
                     .labelsHidden()
-                    .onChange(of: dockClickMinimize) { _, enabled in
+                    .onChangeCompat(of: dockClickMinimize) { _, enabled in
                         if enabled { dockClickHide = false }
                         DockClickService.shared.syncWithPreferences()
                     }
@@ -164,7 +164,7 @@ struct DockSettings: View {
             SettingsRow(symbol: "eye.slash", title: l10n.s.dockClickHide, caption: l10n.s.dockClickHideCaption) {
                 Toggle(l10n.s.dockClickHide, isOn: $dockClickHide)
                     .labelsHidden()
-                    .onChange(of: dockClickHide) { _, enabled in
+                    .onChangeCompat(of: dockClickHide) { _, enabled in
                         if enabled { dockClickMinimize = false }
                         DockClickService.shared.syncWithPreferences()
                     }
@@ -173,7 +173,7 @@ struct DockSettings: View {
                         caption: l10n.s.dockClickCycleWindowsCaption) {
                 Toggle(l10n.s.dockClickCycleWindows, isOn: $dockClickCycleWindows)
                     .labelsHidden()
-                    .onChange(of: dockClickCycleWindows) { _, _ in
+                    .onChangeCompat(of: dockClickCycleWindows) { _, _ in
                         DockClickService.shared.syncWithPreferences()
                     }
             }
@@ -186,7 +186,7 @@ struct DockSettings: View {
                         caption: l10n.s.spacesOrderCaption) {
                 Toggle(l10n.s.spacesOrderName, isOn: $spacesOrderEnabled)
                     .labelsHidden()
-                    .onChange(of: spacesOrderEnabled) { _, _ in
+                    .onChangeCompat(of: spacesOrderEnabled) { _, _ in
                         SpacesOrderHold.shared.syncWithPreferences()
                     }
             }

@@ -211,7 +211,7 @@ struct MediaWorkspaceView: View {
                 applyMediaDefaults(for: inputURL, tool: selectedTool, replacingInput: false)
             }
         }
-        .onChange(of: currentImageOptions) { oldOptions, newOptions in
+        .onChangeCompat(of: currentImageOptions) { oldOptions, newOptions in
             guard selectedTool == .imageCompressor else { return }
             if outputWasChosenManually {
                 if inputURLs.count == 1,
@@ -230,7 +230,7 @@ struct MediaWorkspaceView: View {
             workspace.durationLoading.cancel()
             cancelVideoImport()
         }
-        .onChange(of: featureRuntime.revision) {
+        .onChangeCompat(of: featureRuntime.revision) {
             if !AppFeature.mediaTools.isAvailable {
                 mediaDefaultsTask?.cancel()
                 workspace.durationLoading.cancel()
@@ -675,7 +675,7 @@ struct MediaWorkspaceView: View {
                     }
                 }
                 .labelsHidden()
-                .onChange(of: imageSelectedProfileID) { _, value in
+                .onChangeCompat(of: imageSelectedProfileID) { _, value in
                     guard !value.isEmpty,
                           let profile = imageProfiles.first(where: { $0.id == value }) else { return }
                     applyImageOptions(profile.options)

@@ -669,7 +669,7 @@ struct ScreenshotEditorView: View {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: tool.screenshotSymbolName)
                     .font(.system(size: 13.5, weight: .medium))
-                    .symbolEffect(.bounce, value: isActive)
+                    .bounceEffectCompat(value: isActive)
                     .frame(width: 33, height: 29)
                 if let shortcutLabel {
                     Text(shortcutLabel)

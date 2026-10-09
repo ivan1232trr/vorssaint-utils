@@ -27,7 +27,7 @@ struct NotchSectionsView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .onChange(of: sections) { _, visible in
+        .onChangeCompat(of: sections) { _, visible in
             if !visible.contains(where: { $0 == service.highlightedSection }) {
                 service.highlightedSection = visible.first
             }
@@ -62,7 +62,7 @@ struct NotchSectionsView: View {
             .frame(height: NotchLayout.railHeight(rows: visible, rowHeight: NotchLayout.sectionTileHeight,
                                                   spacing: NotchLayout.sectionSpacing), alignment: .top)
             .clipped()
-            .animation(reduceMotion ? nil : .spring(duration: 0.3, bounce: 0), value: first)
+            .animation(reduceMotion ? nil : .springCompat(duration: 0.3, bounce: 0), value: first)
             .accessibilityScrollAction { edge in
                 if edge == .bottom { service.scrollSections(by: 1) }
                 else if edge == .top { service.scrollSections(by: -1) }

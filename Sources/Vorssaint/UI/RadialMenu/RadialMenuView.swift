@@ -57,8 +57,8 @@ struct RadialMenuView: View {
                       : .easeIn(duration: 0.13))
                    : nil,
                    value: service.visible)
-        .onChange(of: service.highlightedIndex) { _, _ in syncWedge() }
-        .onChange(of: items.count) { _, _ in syncWedge() }
+        .onChangeCompat(of: service.highlightedIndex) { _, _ in syncWedge() }
+        .onChangeCompat(of: items.count) { _, _ in syncWedge() }
         .accessibilityLabel(text.pageTitle)
     }
 
@@ -296,7 +296,7 @@ private struct RadialChipView: View {
         // A chip born into an open wheel is a submenu arriving, and draws
         // itself in the same sweep the wheel itself did.
         .onAppear { if open { bloom() } else { settled = false } }
-        .onChange(of: open) { _, isOpen in
+        .onChangeCompat(of: open) { _, isOpen in
             if isOpen { bloom() } else { fold() }
         }
     }

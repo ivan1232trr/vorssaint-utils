@@ -116,7 +116,7 @@ struct PanelWindowLayoutView: View {
                 .toggleStyle(.checkbox)
                 .controlSize(.small)
                 .font(.system(size: 10.5, weight: .medium))
-                .onChange(of: edgeSnapEnabled) { _, _ in
+                .onChangeCompat(of: edgeSnapEnabled) { _, _ in
                     WindowLayoutService.shared.syncWithPreferences()
                 }
             Text(text.edgeSnapCaption)
@@ -129,7 +129,7 @@ struct PanelWindowLayoutView: View {
                                          text: text,
                                          resetTitle: l10n.s.shortcutReset,
                                          compact: true)
-                    .onChange(of: edgeSnapDisabledZones) { _, _ in
+                    .onChangeCompat(of: edgeSnapDisabledZones) { _, _ in
                         WindowLayoutService.shared.syncWithPreferences()
                     }
                     .transition(.opacity.combined(with: .move(edge: .top)))
@@ -160,7 +160,7 @@ struct PanelWindowLayoutView: View {
                 .toggleStyle(.checkbox)
                 .controlSize(.small)
                 .font(.system(size: 10.5, weight: .medium))
-                .onChange(of: shortcutsEnabled) { _, _ in
+                .onChangeCompat(of: shortcutsEnabled) { _, _ in
                     WindowLayoutService.shared.syncWithPreferences()
                 }
             if shortcutsEnabled {
@@ -174,14 +174,14 @@ struct PanelWindowLayoutView: View {
                 .toggleStyle(.checkbox)
                 .controlSize(.small)
                 .font(.system(size: 10.5, weight: .medium))
-                .onChange(of: gestureEnabled) { _, _ in
+                .onChangeCompat(of: gestureEnabled) { _, _ in
                     WindowLayoutService.shared.syncWithPreferences()
                 }
             if gestureEnabled {
                 WindowGestureModifierPicker(storageValue: $gestureModifiers,
                                             title: text.gestureModifiers,
                                             compact: true)
-                    .onChange(of: gestureModifiers) { _, _ in
+                    .onChangeCompat(of: gestureModifiers) { _, _ in
                         WindowLayoutService.shared.syncWithPreferences()
                     }
                 WindowGestureHints(modifierStorage: gestureModifiers,

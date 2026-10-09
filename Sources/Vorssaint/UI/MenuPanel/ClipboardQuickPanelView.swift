@@ -61,13 +61,13 @@ struct ClipboardQuickPanelView: View {
             previewSelection.select(nil)
             previewIsEditing = false
         }
-        .onChange(of: history.quickSelectionID) { _, _ in
+        .onChangeCompat(of: history.quickSelectionID) { _, _ in
             previewSelection.select(history.selectedQuickEntryID)
         }
-        .onChange(of: history.quickQuery) { _, _ in
+        .onChangeCompat(of: history.quickQuery) { _, _ in
             previewSelection.select(history.selectedQuickEntryID)
         }
-        .onChange(of: history.quickWindowPresentationID) { _, _ in
+        .onChangeCompat(of: history.quickWindowPresentationID) { _, _ in
             previewSelection.select(history.selectedQuickEntryID)
         }
     }
@@ -146,26 +146,26 @@ struct ClipboardQuickPanelView: View {
                     }
                 }
                 .background(ScrollBounceDisabler())
-                .onChange(of: history.quickSelectionID) { _, _ in
+                .onChangeCompat(of: history.quickSelectionID) { _, _ in
                     scrollSelectedEntry(with: proxy)
                 }
-                .onChange(of: history.quickSelectionIsVisible) { _, _ in
+                .onChangeCompat(of: history.quickSelectionIsVisible) { _, _ in
                     scrollSelectedEntry(with: proxy)
                 }
-                .onChange(of: history.quickQuery) { _, _ in
+                .onChangeCompat(of: history.quickQuery) { _, _ in
                     scrollSelectedEntry(with: proxy)
                 }
                 // The preview takes its width out of the strip, so a card
                 // near the trailing edge would slide out of view under it.
                 // The next pass has the strip at its new width.
-                .onChange(of: history.quickPreviewPresented) { _, _ in
+                .onChangeCompat(of: history.quickPreviewPresented) { _, _ in
                     guard layout == .cards else { return }
                     DispatchQueue.main.async { scrollSelectedEntry(with: proxy) }
                 }
                 // The window is only hidden between uses, so without this it
                 // reopens wherever it was scrolled, while the selection and
                 // ⌘1 to ⌘9 already start from the first entries.
-                .onChange(of: history.quickWindowPresentationID) { _, _ in
+                .onChangeCompat(of: history.quickWindowPresentationID) { _, _ in
                     proxy.scrollTo(Self.topAnchorID, anchor: layout == .list ? .top : .leading)
                 }
             }
@@ -429,10 +429,10 @@ private struct QuickEntryView: View, Equatable {
                 previewSelection.select(id)
             }
         }
-        .onChange(of: previewIsEditing) { _, editing in
+        .onChangeCompat(of: previewIsEditing) { _, editing in
             if editing { previewFollowTask?.cancel() }
         }
-        .onChange(of: presentationID) { _, _ in
+        .onChangeCompat(of: presentationID) { _, _ in
             isHovered = false
             previewFollowTask?.cancel()
         }

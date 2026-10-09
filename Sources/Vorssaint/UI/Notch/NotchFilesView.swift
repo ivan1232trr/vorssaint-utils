@@ -94,18 +94,18 @@ struct NotchFilesView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onChange(of: archives.mediaSession?.id) {
+        .onChangeCompat(of: archives.mediaSession?.id) {
             service.refreshPresentation()
         }
-        .onChange(of: archives.mediaPresented) { service.refreshPresentation() }
-        .onChange(of: showingActions || outputPanel != nil) { _, active in service.keepFileInteractionOpen(active) }
+        .onChangeCompat(of: archives.mediaPresented) { service.refreshPresentation() }
+        .onChangeCompat(of: showingActions || outputPanel != nil) { _, active in service.keepFileInteractionOpen(active) }
         .onDisappear {
             outputPanel?.cancel(nil)
             outputPanel = nil
             // Only the island's own page holds the island open.
             if !preview { service.keepFileInteractionOpen(false) }
         }
-        .onChange(of: features.revision) {
+        .onChangeCompat(of: features.revision) {
             if !AppFeature.mediaTools.isAvailable {
                 archives.syncWithPreferences()
                 showingActions = false

@@ -67,7 +67,7 @@ struct NotchAgentStrip: View {
                                 // A reading that gains a digit, like an hour
                                 // passing, needs wider wings; the service
                                 // measures the same reading.
-                                .onChange(of: NotchAgentSupport.readingShape(text)) { _, _ in
+                                .onChangeCompat(of: NotchAgentSupport.readingShape(text)) { _, _ in
                                     DispatchQueue.main.async { service.refreshPresentation() }
                                 }
                         }

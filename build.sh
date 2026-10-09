@@ -95,7 +95,9 @@ NOW_PLAYING_ADAPTER="libVorssaintNowPlaying.dylib"
 # Deployment floor shared by every slice; matches LSMinimumSystemVersion in Info.plist.
 DEPLOYMENT_VERSION="13.0"
 # The test runner executes on this Mac, so it is always built for the host CPU.
-TARGET="$HOST_ARCH-apple-macosx$DEPLOYMENT_VERSION"
+# It stays on macOS 14: tests inspect macOS 14-only details (display links,
+# symbol effects) and only ever run on the build machine, never on Ventura.
+TARGET="$HOST_ARCH-apple-macosx14.0"
 ENTITLEMENTS="Resources/Vorssaint.entitlements"
 LEGACY_IDENTITY="Vorssaint Utils Signing"
 

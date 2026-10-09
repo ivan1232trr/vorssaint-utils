@@ -55,7 +55,7 @@ struct DiskSection: View {
             }
             .panelCard()
             .onAppear(perform: ensureSelectedDisk)
-            .onChange(of: disks.map(\.id)) { _, _ in ensureSelectedDisk() }
+            .onChangeCompat(of: disks.map(\.id)) { _, _ in ensureSelectedDisk() }
         }
     }
 

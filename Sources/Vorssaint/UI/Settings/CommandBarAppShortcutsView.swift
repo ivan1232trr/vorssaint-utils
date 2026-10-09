@@ -150,10 +150,10 @@ struct CommandBarAppShortcutsView: View {
         .padding(24)
         .frame(width: 780, height: 560)
         .onAppear { service.refreshApplications() }
-        .onChange(of: features.revision) { _, _ in
+        .onChangeCompat(of: features.revision) { _, _ in
             if !AppFeature.commandBar.isAvailable { dismiss() }
         }
-        .onChange(of: l10n.language) { _, _ in message = nil }
+        .onChangeCompat(of: l10n.language) { _, _ in message = nil }
     }
 
     private func visibleApps(shortcuts: [String: GlobalShortcut], aliases: [String: String],
@@ -254,8 +254,8 @@ private struct CommandBarAppAliasField: View {
             .focused($focused)
             .accessibilityLabel("\(entry.title): \(text.appAliasLabel)")
             .onAppear { draft = savedAlias }
-            .onChange(of: savedAlias) { _, value in if !focused { draft = value } }
-            .onChange(of: focused) { _, value in if !value { save() } }
+            .onChangeCompat(of: savedAlias) { _, value in if !focused { draft = value } }
+            .onChangeCompat(of: focused) { _, value in if !value { save() } }
             .onSubmit(save)
             .onDisappear(perform: save)
     }

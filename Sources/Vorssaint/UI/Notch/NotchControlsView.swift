@@ -252,7 +252,7 @@ struct NotchAudioControls: View {
                 .font(.system(size: 12, weight: .semibold))
                 .monospacedDigit()
                 .contentTransition(.numericText())
-                .animation(reduceMotion ? nil : .smooth(duration: 0.2), value: level)
+                .animation(reduceMotion ? nil : .smoothCompat(duration: 0.2), value: level)
         }
     }
 
@@ -270,8 +270,8 @@ struct NotchAudioControls: View {
             Image(systemName: mixer.systemOutputMuted == true ? "speaker.slash.fill" : "speaker.wave.2.fill")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(mixer.systemOutputMuted == true ? Color.red : Color.white)
-                .contentTransition(.symbolEffect(.replace))
-                .animation(reduceMotion ? nil : .smooth(duration: 0.24), value: mixer.systemOutputMuted)
+                .symbolReplaceTransitionCompat()
+                .animation(reduceMotion ? nil : .smoothCompat(duration: 0.24), value: mixer.systemOutputMuted)
                 .frame(width: 18, height: 18)
                 .contentShape(Rectangle())
         }
@@ -431,7 +431,7 @@ private struct NotchBrightnessControls: View {
                 .font(.system(size: 12, weight: .semibold))
                 .monospacedDigit()
                 .contentTransition(.numericText())
-                .animation(reduceMotion ? nil : .smooth(duration: 0.2), value: display.brightness)
+                .animation(reduceMotion ? nil : .smoothCompat(duration: 0.2), value: display.brightness)
         }
     }
 
@@ -503,8 +503,8 @@ private struct NotchKeyboardLightControls: View {
         } label: {
             Image(systemName: service.keyboardLightEnabled == false ? "light.min" : "light.max")
                 .font(.system(size: 12, weight: .medium))
-                .contentTransition(.symbolEffect(.replace))
-                .animation(reduceMotion ? nil : .smooth(duration: 0.24), value: service.keyboardLightEnabled)
+                .symbolReplaceTransitionCompat()
+                .animation(reduceMotion ? nil : .smoothCompat(duration: 0.24), value: service.keyboardLightEnabled)
                 .frame(width: 18, height: 18)
                 .contentShape(Rectangle())
         }
@@ -530,7 +530,7 @@ private struct NotchKeyboardLightControls: View {
                 .font(.system(size: 12, weight: .semibold))
                 .monospacedDigit()
                 .contentTransition(.numericText())
-                .animation(reduceMotion ? nil : .smooth(duration: 0.2), value: level)
+                .animation(reduceMotion ? nil : .smoothCompat(duration: 0.2), value: level)
         }
     }
 
@@ -592,10 +592,10 @@ struct NotchActionTile: View {
             VStack(spacing: 6) {
                 Image(systemName: symbol).font(.system(size: 17, weight: .medium))
                     .foregroundStyle(active ? accent.glyph : .white.opacity(0.85))
-                    .contentTransition(.symbolEffect(.replace))
+                    .symbolReplaceTransitionCompat()
                     .frame(width: 40, height: 40)
                     .background(active ? accent.fill : Color.white.opacity(0.075), in: Circle())
-                    .animation(reduceMotion ? nil : .smooth(duration: 0.26), value: symbol)
+                    .animation(reduceMotion ? nil : .smoothCompat(duration: 0.26), value: symbol)
                 label
                     .frame(maxWidth: .infinity)
                     .frame(height: 28, alignment: .top)
@@ -603,7 +603,7 @@ struct NotchActionTile: View {
             .padding(.horizontal, 4)
             .frame(maxWidth: .infinity)
             .frame(height: NotchLayout.shortcutHeight)
-            .animation(reduceMotion ? nil : .smooth(duration: 0.26), value: active)
+            .animation(reduceMotion ? nil : .smoothCompat(duration: 0.26), value: active)
             .contentShape(RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(NotchButtonStyle(cornerRadius: 14))

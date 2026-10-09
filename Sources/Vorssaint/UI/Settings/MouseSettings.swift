@@ -183,7 +183,7 @@ struct MouseSettings: View {
                 SettingsRow(symbol: "arrow.up.arrow.down", title: l10n.s.invertVerticalScroll) {
                     Toggle(l10n.s.invertVerticalScroll, isOn: $invertVertical)
                         .labelsHidden()
-                        .onChange(of: invertVertical) { _, _ in
+                        .onChangeCompat(of: invertVertical) { _, _ in
                             ScrollInverter.shared.syncWithPreferences()
                             if scrollDirectionEnabled { permissions.requestAccessibility() }
                         }
@@ -191,7 +191,7 @@ struct MouseSettings: View {
                 SettingsRow(symbol: "arrow.left.arrow.right", title: l10n.s.invertHorizontalScroll) {
                     Toggle(l10n.s.invertHorizontalScroll, isOn: $invertHorizontal)
                         .labelsHidden()
-                        .onChange(of: invertHorizontal) { _, _ in
+                        .onChangeCompat(of: invertHorizontal) { _, _ in
                             ScrollInverter.shared.syncWithPreferences()
                             if scrollDirectionEnabled { permissions.requestAccessibility() }
                         }
@@ -202,7 +202,7 @@ struct MouseSettings: View {
                             caption: l10n.s.scrollHorizontalCaption) {
                     Toggle(l10n.s.scrollHorizontalName, isOn: $horizontalScrollEnabled)
                         .labelsHidden()
-                        .onChange(of: horizontalScrollEnabled) { _, _ in
+                        .onChangeCompat(of: horizontalScrollEnabled) { _, _ in
                             ScrollInverter.shared.syncWithPreferences()
                             if scrollDirectionEnabled { permissions.requestAccessibility() }
                         }
@@ -277,7 +277,7 @@ struct MouseSettings: View {
                         caption: l10n.s.focusFollowsMouseCaption) {
                 Toggle(l10n.s.focusFollowsMouseName, isOn: $focusFollowsMouseEnabled)
                     .labelsHidden()
-                    .onChange(of: focusFollowsMouseEnabled) { _, enabled in
+                    .onChangeCompat(of: focusFollowsMouseEnabled) { _, enabled in
                         FocusFollowsMouseService.shared.syncWithPreferences()
                         if enabled { Permissions.shared.requestAccessibility() }
                     }
@@ -308,7 +308,7 @@ struct MouseSettings: View {
             SettingsRow(symbol: "scroll", title: l10n.s.smoothScrollName, caption: l10n.s.smoothScrollCaption) {
                 Toggle(l10n.s.smoothScrollName, isOn: $smoothScrollEnabled)
                     .labelsHidden()
-                    .onChange(of: smoothScrollEnabled) { _, enabled in
+                    .onChangeCompat(of: smoothScrollEnabled) { _, enabled in
                         SmoothScrollService.shared.syncWithPreferences()
                         if enabled { permissions.requestAccessibility() }
                     }
@@ -355,7 +355,7 @@ struct MouseSettings: View {
                         caption: l10n.s.linearScrollCaption) {
                 Toggle(l10n.s.linearScrollName, isOn: $linearScrollEnabled)
                     .labelsHidden()
-                    .onChange(of: linearScrollEnabled) { _, enabled in
+                    .onChangeCompat(of: linearScrollEnabled) { _, enabled in
                         ScrollInverter.shared.syncWithPreferences()
                         if enabled { permissions.requestAccessibility() }
                     }
@@ -399,7 +399,7 @@ struct MouseSettings: View {
                         caption: l10n.s.mouseAccelerationCaption) {
                 Toggle(l10n.s.mouseAccelerationName, isOn: $mouseAccelerationDisabled)
                     .labelsHidden()
-                    .onChange(of: mouseAccelerationDisabled) { _, _ in
+                    .onChangeCompat(of: mouseAccelerationDisabled) { _, _ in
                         MouseAccelerationService.shared.syncWithPreferences()
                     }
             }
@@ -412,7 +412,7 @@ struct MouseSettings: View {
                         caption: l10n.s.mouseNavigationCaption) {
                 Toggle(l10n.s.mouseNavigationEnable, isOn: $mouseNavigationEnabled)
                     .labelsHidden()
-                    .onChange(of: mouseNavigationEnabled) { _, enabled in
+                    .onChangeCompat(of: mouseNavigationEnabled) { _, enabled in
                         MouseNavigationService.shared.syncWithPreferences()
                         if enabled { permissions.requestAccessibility() }
                     }
@@ -432,7 +432,7 @@ struct MouseSettings: View {
                         caption: mouseClickDebounceText.caption) {
                 Toggle(mouseClickDebounceText.title, isOn: $mouseClickDebounceEnabled)
                     .labelsHidden()
-                    .onChange(of: mouseClickDebounceEnabled) { _, enabled in
+                    .onChangeCompat(of: mouseClickDebounceEnabled) { _, enabled in
                         MouseClickDebounceService.shared.syncWithPreferences()
                         if enabled { permissions.requestAccessibility() }
                     }
@@ -466,7 +466,7 @@ struct MouseSettings: View {
                         caption: l10n.s.middleClickEnableCaption) {
                 Toggle(l10n.s.middleClickEnable, isOn: $middleClickEnabled)
                     .labelsHidden()
-                    .onChange(of: middleClickEnabled) { _, enabled in
+                    .onChangeCompat(of: middleClickEnabled) { _, enabled in
                         MiddleClickService.shared.syncWithPreferences()
                         if enabled { permissions.requestAccessibility() }
                     }

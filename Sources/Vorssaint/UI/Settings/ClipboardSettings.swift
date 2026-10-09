@@ -38,7 +38,7 @@ struct ClipboardSettings: View {
             if AppFeature.clipboardHistory.isAvailable {
                 Section {
                     Toggle(text.enable, isOn: $enabled)
-                        .onChange(of: enabled) { _, _ in
+                        .onChangeCompat(of: enabled) { _, _ in
                             ClipboardHistoryService.shared.syncWithPreferences()
                         }
                     Text(text.caption)
@@ -93,7 +93,7 @@ struct ClipboardSettings: View {
             if AppFeature.finderCutPaste.isAvailable {
                 Section {
                     Toggle(text.pasteImageAsFile, isOn: $pasteImageAsFile)
-                        .onChange(of: pasteImageAsFile) { _, _ in
+                        .onChangeCompat(of: pasteImageAsFile) { _, _ in
                             FinderCutPaste.shared.syncWithPreferences()
                         }
                     Text(text.pasteImageAsFileCaption)
@@ -108,7 +108,7 @@ struct ClipboardSettings: View {
             if AppFeature.pastePlain.isAvailable {
                 Section {
                     Toggle(l10n.s.pastePlainName, isOn: $pastePlainEnabled)
-                        .onChange(of: pastePlainEnabled) { _, _ in
+                        .onChangeCompat(of: pastePlainEnabled) { _, _ in
                             PastePlainService.shared.syncWithPreferences()
                         }
                     Text(l10n.s.pastePlainCaption)
@@ -142,7 +142,7 @@ struct ClipboardSettings: View {
             autoClearDelay = Defaults.sanitizedClipboardAutoClearDelay(autoClearDelay)
             menuBarPreviewLength = Defaults.sanitizedClipboardMenuBarPreviewLength(menuBarPreviewLength)
         }
-        .onChange(of: limit) { _, value in
+        .onChangeCompat(of: limit) { _, value in
             let sanitized = Defaults.sanitizedClipboardHistoryLimit(value)
             if sanitized != value { limit = sanitized }
             ClipboardHistoryService.shared.trimToLimit()
@@ -151,11 +151,11 @@ struct ClipboardSettings: View {
         // running poll reads this value from UserDefaults on every tick, so a
         // new delay takes effect on the next one. Syncing would just tear the
         // timer down and restart the wait.
-        .onChange(of: autoClearDelay) { _, value in
+        .onChangeCompat(of: autoClearDelay) { _, value in
             let sanitized = Defaults.sanitizedClipboardAutoClearDelay(value)
             if sanitized != value { autoClearDelay = sanitized }
         }
-        .onChange(of: menuBarPreviewLength) { _, value in
+        .onChangeCompat(of: menuBarPreviewLength) { _, value in
             let sanitized = Defaults.sanitizedClipboardMenuBarPreviewLength(value)
             if sanitized != value { menuBarPreviewLength = sanitized }
         }
@@ -165,7 +165,7 @@ struct ClipboardSettings: View {
     private var clipboardShortcutSection: some View {
         Section(text.shortcut) {
             Toggle(text.shortcut, isOn: $shortcutEnabled)
-                .onChange(of: shortcutEnabled) { _, _ in
+                .onChangeCompat(of: shortcutEnabled) { _, _ in
                     ClipboardHistoryService.shared.syncHotkey()
                 }
                 .disabled(!enabled)
@@ -237,7 +237,7 @@ struct ClipboardSettings: View {
         Section {
             HStack {
                 Toggle(text.autoClearEnable, isOn: $autoClearOnDelay)
-                    .onChange(of: autoClearOnDelay) { _, _ in
+                    .onChangeCompat(of: autoClearOnDelay) { _, _ in
                         ClipboardAutoClearService.shared.syncWithPreferences()
                     }
                 TextField("", value: $autoClearDelay, formatter: Self.delayFieldFormatter)
@@ -249,15 +249,15 @@ struct ClipboardSettings: View {
             }
             .fixedSize(horizontal: false, vertical: true)
             Toggle(text.autoClearOnSleep, isOn: $autoClearOnSleep)
-                .onChange(of: autoClearOnSleep) { _, _ in
+                .onChangeCompat(of: autoClearOnSleep) { _, _ in
                     ClipboardAutoClearService.shared.syncWithPreferences()
                 }
             Toggle(text.autoClearOnDisplaySleep, isOn: $autoClearOnDisplaySleep)
-                .onChange(of: autoClearOnDisplaySleep) { _, _ in
+                .onChangeCompat(of: autoClearOnDisplaySleep) { _, _ in
                     ClipboardAutoClearService.shared.syncWithPreferences()
                 }
             Toggle(text.autoClearOnScreenLock, isOn: $autoClearOnScreenLock)
-                .onChange(of: autoClearOnScreenLock) { _, _ in
+                .onChangeCompat(of: autoClearOnScreenLock) { _, _ in
                     ClipboardAutoClearService.shared.syncWithPreferences()
                 }
             Text(text.autoClearCaption)

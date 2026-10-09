@@ -47,7 +47,7 @@ struct NotchMascotSettings: View {
         NotchSupport.hasNotchedDisplay || NotchSilhouette(rawValue: silhouette) == .notch
     }
 
-    private var animation: Animation? { reduceMotion ? nil : .smooth(duration: 0.25) }
+    private var animation: Animation? { reduceMotion ? nil : .smoothCompat(duration: 0.25) }
 
     var body: some View {
         ScrollView {
@@ -338,7 +338,7 @@ private struct NotchMascotStageCard: View {
         }
         .padding(16)
         .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .onChange(of: awake) { _, awake in
+        .onChangeCompat(of: awake) { _, awake in
             // A moment still playing ends; switched on, it wakes up with a
             // stretch, and off, it yawns and dozes off. Hidden a moment ago
             // to show how it hides, it is back in its place for that.
@@ -347,20 +347,20 @@ private struct NotchMascotStageCard: View {
             if visit?.kind == NotchMascotSupport.hideAway { visit = nil }
             react(awake ? .wakeUp : .yawn)
         }
-        .onChange(of: side) { _, _ in
+        .onChangeCompat(of: side) { _, _ in
             // To the camera's other side: behind it, across and out, as in the island.
             guard awake, visit == nil else { return }
             startVisit(.cross, greeting: .wink)
         }
-        .onChange(of: visits) { _, visits in
+        .onChangeCompat(of: visits) { _, visits in
             // Its visits back on, it takes one right away.
             if visits { play(.visit) }
         }
-        .onChange(of: reactions) { _, reactions in
+        .onChangeCompat(of: reactions) { _, reactions in
             // Reacting again, it perks up.
             if reactions, awake, visit == nil { react(.perk) }
         }
-        .onChange(of: hides) { _, hides in
+        .onChangeCompat(of: hides) { _, hides in
             // Set to hide when idle, it shows how it goes into the island,
             // and a moment later comes back out, as the preview keeps it in sight.
             guard hides, awake, visit == nil else { return }
@@ -376,7 +376,7 @@ private struct NotchMascotStageCard: View {
             playingWork = work
             DispatchQueue.main.asyncAfter(deadline: .now() + away.duration + 0.8, execute: work)
         }
-        .onChange(of: look) { _, _ in
+        .onChangeCompat(of: look) { _, _ in
             // A new look, and it is glad of it, once the choosing settles.
             lookWork?.cancel()
             guard awake else { return }
@@ -515,7 +515,7 @@ private struct NotchMascotStage: View {
                     .transition(.opacity.combined(with: .offset(y: 4)))
             }
         }
-        .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: caption?.title)
+        .animation(reduceMotion ? nil : .smoothCompat(duration: 0.25), value: caption?.title)
         .frame(width: width, height: Self.height, alignment: .top)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(.primary.opacity(0.07)))

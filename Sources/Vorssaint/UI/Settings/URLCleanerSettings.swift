@@ -32,7 +32,7 @@ struct URLCleanerSettings: View {
         Form {
             Section {
                 Toggle(l10n.s.urlCleanerEnable, isOn: $enabled)
-                    .onChange(of: enabled) { _, _ in
+                    .onChangeCompat(of: enabled) { _, _ in
                         URLCleanerService.shared.syncWithPreferences()
                     }
                 Text(l10n.s.urlCleanerEnableCaption)

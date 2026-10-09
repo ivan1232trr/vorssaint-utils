@@ -932,7 +932,7 @@ private struct Filmstrip: View {
                 playhead(at: position(model.sourceTime, width: width), height: height)
             }
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .coordinateSpace(.named(coordinateSpace))
+            .coordinateSpace(name: coordinateSpace)
         }
     }
 

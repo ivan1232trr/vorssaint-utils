@@ -60,7 +60,7 @@ struct NetworkSection: View {
         .onReceive(monitor.$snapshot) { _ in
             refreshAppRows(force: false, delay: 0.2)
         }
-        .onChange(of: netApps) { _, visible in
+        .onChangeCompat(of: netApps) { _, visible in
             if visible {
                 startNetworkMonitoringIfNeeded()
                 refreshAppRows(force: true, delay: 0.2)

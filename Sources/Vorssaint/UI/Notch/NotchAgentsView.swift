@@ -775,7 +775,7 @@ private struct NotchAgentResetsCard: View {
         .help(text.resetsHelp)
         .onAppear { resets.refreshIfStale() }
         // A count that changed while the question was open asks again.
-        .onChange(of: resets.summary?.available) { _, _ in confirming = false }
+        .onChangeCompat(of: resets.summary?.available) { _, _ in confirming = false }
     }
 
     @ViewBuilder private var content: some View {

@@ -78,7 +78,7 @@ struct ScreenshotCaptureSettings: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Toggle(strings.fullScreenShortcutTitle, isOn: $fullScreenShortcutEnabled)
-                    .onChange(of: fullScreenShortcutEnabled) { _, _ in
+                    .onChangeCompat(of: fullScreenShortcutEnabled) { _, _ in
                         ScreenshotService.shared.syncWithPreferences()
                     }
                 ShortcutPreferenceRow(role: .screenshotFullScreen,
@@ -91,7 +91,7 @@ struct ScreenshotCaptureSettings: View {
                         .foregroundStyle(.orange)
                 }
                 Toggle(strings.editLastCapture, isOn: $lastCaptureShortcutEnabled)
-                    .onChange(of: lastCaptureShortcutEnabled) { _, _ in
+                    .onChangeCompat(of: lastCaptureShortcutEnabled) { _, _ in
                         ScreenshotService.shared.syncWithPreferences()
                     }
                 ShortcutPreferenceRow(role: .screenshotLastCapture,
@@ -105,7 +105,7 @@ struct ScreenshotCaptureSettings: View {
                         .foregroundStyle(.orange)
                 }
                 Toggle(strings.editClipboardImage, isOn: $clipboardShortcutEnabled)
-                    .onChange(of: clipboardShortcutEnabled) { _, _ in
+                    .onChangeCompat(of: clipboardShortcutEnabled) { _, _ in
                         ScreenshotService.shared.syncWithPreferences()
                     }
                 ShortcutPreferenceRow(role: .screenshotClipboard,
@@ -205,10 +205,10 @@ struct ScreenshotCaptureSettings: View {
 
             Section {
                 Toggle(strings.shareEnabledToggle, isOn: $sharingEnabled)
-                    .onChange(of: sharingEnabled) { _, _ in service.syncWithPreferences() }
+                    .onChangeCompat(of: sharingEnabled) { _, _ in service.syncWithPreferences() }
                 if sharingEnabled {
                     Toggle(strings.uploadLastCapture, isOn: $uploadShortcutEnabled)
-                        .onChange(of: uploadShortcutEnabled) { _, _ in service.syncWithPreferences() }
+                        .onChangeCompat(of: uploadShortcutEnabled) { _, _ in service.syncWithPreferences() }
                     ShortcutPreferenceRow(role: .screenshotUpload,
                                           isEnabled: uploadShortcutEnabled) {
                         service.syncWithPreferences()
@@ -436,7 +436,7 @@ struct ScreenshotCaptureSettings: View {
                         .lineLimit(1)
                 }
                 .fixedSize(horizontal: false, vertical: true)
-                .onChange(of: numberStart) { _, newValue in
+                .onChangeCompat(of: numberStart) { _, newValue in
                     nextNumber = newValue
                 }
             }
@@ -568,7 +568,7 @@ private struct ScreenshotSharedLinksView: View {
             Divider()
 
             if sharing.records.isEmpty {
-                ContentUnavailableView(strings.sharedLinksEmpty,
+                EmptyStateCompat(strings.sharedLinksEmpty,
                                        systemImage: "link.badge.plus")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {

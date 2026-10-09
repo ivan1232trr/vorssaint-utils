@@ -99,7 +99,7 @@ struct CommandBarSettings: View {
                 // pages use: this page already has an "open the bar" button at
                 // the top, so the toggle has to say which of the two it arms.
                 Toggle(text.shortcutToggle, isOn: $shortcutEnabled)
-                    .onChange(of: shortcutEnabled) { _, _ in
+                    .onChangeCompat(of: shortcutEnabled) { _, _ in
                         CommandBarService.shared.syncWithPreferences()
                     }
                 ShortcutPreferenceRow(role: .commandBar, isEnabled: shortcutEnabled) {

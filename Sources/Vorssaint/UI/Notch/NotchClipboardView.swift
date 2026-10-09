@@ -112,13 +112,13 @@ struct NotchClipboardView: View {
                         }
                     }
                     .scrollIndicators(.automatic)
-                    .onChange(of: highlightedID) { _, id in
+                    .onChangeCompat(of: highlightedID) { _, id in
                         guard let id else { return }
                         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { proxy.scrollTo(id) }
                     }
                     // A copied recent entry moves to the top, so the list
                     // follows it and the tick stays in view.
-                    .onChange(of: copiedID) { _, id in
+                    .onChangeCompat(of: copiedID) { _, id in
                         guard let id else { return }
                         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { proxy.scrollTo(id) }
                     }
@@ -128,10 +128,10 @@ struct NotchClipboardView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         // A new search starts from its top result instead of a row it hid,
         // and a row that leaves the list hands the highlight on the same way.
-        .onChange(of: query) { _, _ in highlightedID = searchHighlight(keeping: nil) }
-        .onChange(of: pinnedOnly) { _, _ in highlightedID = searchHighlight(keeping: nil) }
-        .onChange(of: entries.map(\.id)) { _, _ in highlightedID = searchHighlight(keeping: highlightedID) }
-        .onChange(of: service.clipboardPastePress) { _, press in
+        .onChangeCompat(of: query) { _, _ in highlightedID = searchHighlight(keeping: nil) }
+        .onChangeCompat(of: pinnedOnly) { _, _ in highlightedID = searchHighlight(keeping: nil) }
+        .onChangeCompat(of: entries.map(\.id)) { _, _ in highlightedID = searchHighlight(keeping: highlightedID) }
+        .onChangeCompat(of: service.clipboardPastePress) { _, press in
             guard let press, !preview else { return }
             guard entries.indices.contains(press.index) else {
                 NSSound.beep()

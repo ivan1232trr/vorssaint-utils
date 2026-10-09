@@ -23,7 +23,7 @@ struct NotchCalendarView: View {
 
     var body: some View {
         Group {
-            if permissions.calendarAccess == .fullAccess {
+            if permissions.calendarAccess.hasFullAccessCompat {
                 TimelineView(.everyMinute) { context in
                     Group {
                         if showsMonth {
@@ -48,7 +48,7 @@ struct NotchCalendarView: View {
                             }
                         }
                     }
-                    .onChange(of: Calendar.current.startOfDay(for: context.date)) { _, _ in
+                    .onChangeCompat(of: Calendar.current.startOfDay(for: context.date)) { _, _ in
                         if selectedDay == nil { focus = context.date }
                     }
                 }
@@ -61,13 +61,13 @@ struct NotchCalendarView: View {
         // date and the 12/24-hour clock follow the user's region.
         .environment(\.locale, l10n.language.formattingLocale())
         .onAppear { if ownsMonth { calendar.showMonth(focus) } }
-        .onChange(of: focus) { previous, date in
+        .onChangeCompat(of: focus) { previous, date in
             // A month read already covers every week of that month, so
             // moving the strip within it keeps the loaded events.
             if !Calendar.current.isDate(previous, equalTo: date, toGranularity: .month) { calendar.showMonth(date) }
         }
         // Escape returns from the month grid to the strip before the island closes.
-        .onChange(of: showingMonth && !showsMonth) { _, showing in
+        .onChangeCompat(of: showingMonth && !showsMonth) { _, showing in
             guard !preview else { return }
             NotchService.shared.setPageLayer(.calendar, close: showing ? { showingMonth = false } : nil)
         }
@@ -184,7 +184,7 @@ struct NotchCalendarView: View {
             ScrollView { appointmentList(now: now) }
                 .scrollIndicators(.automatic)
                 .id(selectedDay)
-                .onChange(of: calendar.loading ? nil : calendar.revealing, initial: true) { _, target in
+                .onChangeCompat(of: calendar.loading ? nil : calendar.revealing, initial: true) { _, target in
                     guard !preview, let target else { return }
                     DispatchQueue.main.async {
                         guard !calendar.loading, calendar.revealing == target else { return }

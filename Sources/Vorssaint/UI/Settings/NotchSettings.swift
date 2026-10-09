@@ -165,15 +165,15 @@ struct NotchSettings: View {
             }
         }
         .padding(.horizontal, 22).padding(.top, 22)
-        .onChange(of: configuration) { _, _ in sync() }
-        .onChange(of: accessData) { _, _ in NotchService.shared.syncWithPreferences() }
-        .onChange(of: tab) { _, _ in draggingModule = nil; draggingControl = nil }
+        .onChangeCompat(of: configuration) { _, _ in sync() }
+        .onChangeCompat(of: accessData) { _, _ in NotchService.shared.syncWithPreferences() }
+        .onChangeCompat(of: tab) { _, _ in draggingModule = nil; draggingControl = nil }
         .onAppear(perform: consumeModuleHint)
-        .onChange(of: router.notchModule) { _, _ in consumeModuleHint() }
+        .onChangeCompat(of: router.notchModule) { _, _ in consumeModuleHint() }
         .onAppear(perform: consumeCompanionHint)
-        .onChange(of: router.notchCompanion) { _, _ in consumeCompanionHint() }
+        .onChangeCompat(of: router.notchCompanion) { _, _ in consumeCompanionHint() }
         // Uninstalled while its tab shows, the companion leaves the page to the layout.
-        .onChange(of: features.isAvailable(.notchMascot)) { _, installed in
+        .onChangeCompat(of: features.isAvailable(.notchMascot)) { _, installed in
             if !installed, tab == .companion { tab = .layout }
         }
     }
@@ -363,8 +363,8 @@ struct NotchSettings: View {
                 .scrollIndicators(.automatic)
                 // A section chosen from the island itself may sit low in the list.
                 .onAppear { reader.scrollTo(selectedModule) }
-                .onChange(of: selectedModule) { _, module in
-                    withAnimation(reduceMotion ? nil : .smooth(duration: 0.2)) { reader.scrollTo(module) }
+                .onChangeCompat(of: selectedModule) { _, module in
+                    withAnimation(reduceMotion ? nil : .smoothCompat(duration: 0.2)) { reader.scrollTo(module) }
                 }
             }
         }
@@ -446,7 +446,7 @@ struct NotchSettings: View {
         case .calendar:
             let calendar = FeatureStrings.notchCalendar(l10n.language)
             Text(calendar.permission).font(.callout).foregroundStyle(.secondary)
-            if permissions.calendarAccess == .fullAccess {
+            if permissions.calendarAccess.hasFullAccessCompat {
                 Label(l10n.s.permissionGranted, systemImage: "checkmark.circle.fill").foregroundStyle(.green)
             } else {
                 Button(calendar.allow, action: permissions.requestCalendar).disabled(permissions.requestingCalendar)
@@ -457,7 +457,7 @@ struct NotchSettings: View {
                       isOn: $calendarCountdown)
             switchRow("hourglass", calendar.timeLeft, caption: calendar.timeLeftHint, isOn: $calendarTimeLeft)
             switchRow("number", calendar.weekNumbers, isOn: $calendarWeekNumbers)
-            if permissions.calendarAccess == .fullAccess { NotchCalendarSelection() }
+            if permissions.calendarAccess.hasFullAccessCompat { NotchCalendarSelection() }
         case .timer:
             let activities = FeatureStrings.notchActivities(l10n.language)
             switchRow("eye.slash", activities.hideTimerCountdown,

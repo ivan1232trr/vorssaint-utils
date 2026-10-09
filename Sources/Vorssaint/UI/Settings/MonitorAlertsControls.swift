@@ -48,18 +48,18 @@ struct MonitorAlertsControls: View {
             sanitizeAlertValues()
             refreshNotificationStatus()
         }
-        .onChange(of: alertCPU) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
-        .onChange(of: alertCPUTemperature) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
-        .onChange(of: alertBatteryTemperature) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
-        .onChange(of: alertMemory) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
-        .onChange(of: alertDisk) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
-        .onChange(of: alertBattery) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
-        .onChange(of: alertCPUThreshold) { _, _ in sanitizeAlertValues() }
-        .onChange(of: alertCPUTemperatureThreshold) { _, _ in sanitizeAlertValues() }
-        .onChange(of: alertBatteryTemperatureThreshold) { _, _ in sanitizeAlertValues() }
-        .onChange(of: alertDiskFreePercent) { _, _ in sanitizeAlertValues() }
-        .onChange(of: alertBatteryPercent) { _, _ in sanitizeAlertValues() }
-        .onChange(of: alertCooldown) { _, _ in sanitizeAlertValues() }
+        .onChangeCompat(of: alertCPU) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
+        .onChangeCompat(of: alertCPUTemperature) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
+        .onChangeCompat(of: alertBatteryTemperature) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
+        .onChangeCompat(of: alertMemory) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
+        .onChangeCompat(of: alertDisk) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
+        .onChangeCompat(of: alertBattery) { _, _ in MonitorAlertService.shared.syncWithPreferences(); refreshNotificationStatus() }
+        .onChangeCompat(of: alertCPUThreshold) { _, _ in sanitizeAlertValues() }
+        .onChangeCompat(of: alertCPUTemperatureThreshold) { _, _ in sanitizeAlertValues() }
+        .onChangeCompat(of: alertBatteryTemperatureThreshold) { _, _ in sanitizeAlertValues() }
+        .onChangeCompat(of: alertDiskFreePercent) { _, _ in sanitizeAlertValues() }
+        .onChangeCompat(of: alertBatteryPercent) { _, _ in sanitizeAlertValues() }
+        .onChangeCompat(of: alertCooldown) { _, _ in sanitizeAlertValues() }
     }
 
     private var tiles: some View {

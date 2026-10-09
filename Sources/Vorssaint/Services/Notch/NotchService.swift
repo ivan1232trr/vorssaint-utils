@@ -525,7 +525,7 @@ final class NotchService: ObservableObject {
     /// instead of the whole content fading through the host.
     private func switchCompactSelection(_ change: () -> Void) {
         let animation: Animation? = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-            ? nil : .smooth(duration: 0.26)
+            ? nil : .smoothCompat(duration: 0.26)
         withAnimation(animation) {
             objectWillChange.send()
             change()

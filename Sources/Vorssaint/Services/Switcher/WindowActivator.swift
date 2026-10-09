@@ -444,7 +444,7 @@ enum WindowActivator {
     private static func activateAppCooperatively(_ app: NSRunningApplication, allWindows: Bool) {
         let options: NSApplication.ActivationOptions = allWindows ? [.activateAllWindows] : []
         ActivationHandoff.yield(to: app)
-        if !app.activate(from: NSRunningApplication.current, options: options) {
+        if !app.activateFromCurrentCompat(options: options) {
             app.activate(options: options)
         }
     }

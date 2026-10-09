@@ -26,10 +26,10 @@ struct SnippetLibraryView: View {
         .frame(width: 460)
         .background(HUDBackdrop(cornerRadius: 22, contrast: .high))
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .onChange(of: library.presentationID) { _, _ in
+        .onChangeCompat(of: library.presentationID) { _, _ in
             searchFocused = true
         }
-        .onChange(of: library.query) { _, _ in
+        .onChangeCompat(of: library.query) { _, _ in
             library.refreshPanelLayout()
         }
         .onAppear {
@@ -112,7 +112,7 @@ struct SnippetLibraryView: View {
                 .padding(.vertical, 6)
             }
             .frame(maxHeight: 330)
-            .onChange(of: library.selectedID) { _, id in
+            .onChangeCompat(of: library.selectedID) { _, id in
                 guard let id else { return }
                 proxy.scrollTo(id)
             }

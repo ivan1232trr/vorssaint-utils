@@ -177,7 +177,7 @@ struct MetricDetailView: View {
             }
             refreshProcessRows(force: true, delay: 0.2)
         }
-        .onChange(of: kind) { oldKind, newKind in
+        .onChangeCompat(of: kind) { oldKind, newKind in
             if oldKind == .network, newKind != .network {
                 stopNetworkMonitoringIfNeeded()
             } else if oldKind != .network, newKind == .network {

@@ -136,7 +136,7 @@ struct NotchSystemView: View {
                 Text(card.value ?? "…")
                     .font(.system(size: card.detail == nil ? 22 : 15, weight: .medium, design: .rounded))
                     .monospacedDigit().contentTransition(.numericText()).lineLimit(1).minimumScaleFactor(0.75)
-                    .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: card.value)
+                    .animation(reduceMotion ? nil : .smoothCompat(duration: 0.25), value: card.value)
                 if let detail = card.detail {
                     Text(detail).font(.system(size: 11)).monospacedDigit().foregroundStyle(.secondary).lineLimit(1)
                 } else if let level = card.level {

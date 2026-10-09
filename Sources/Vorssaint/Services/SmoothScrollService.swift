@@ -27,7 +27,9 @@ final class SmoothScrollService: ObservableObject {
 
     private var tap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
-    private var displayLink: CADisplayLink?
+    /// The screen's CADisplayLink on macOS 14+ (AnyObject because the class does
+    /// not exist on macOS 13, which always uses `frameTimer` instead).
+    private var displayLink: AnyObject?
     private var frameTimer: Timer?
     private var schedulerDisplayID: CGDirectDisplayID?
     private var screenObserver: NSObjectProtocol?
@@ -420,7 +422,8 @@ final class SmoothScrollService: ObservableObject {
         if frameTimer != nil, displayID == nil { return }
 
         stopFrameScheduler()
-        if let screen, let displayID {
+        // A per-screen display link needs macOS 14; Ventura falls through to the timer below.
+        if #available(macOS 14.0, *), let screen, let displayID {
             let displayLink = screen.displayLink(
                 target: self,
                 selector: #selector(displayLinkDidFire(_:))
@@ -457,6 +460,7 @@ final class SmoothScrollService: ObservableObject {
         lastFrameTimestamp = nil
     }
 
+    @available(macOS 14.0, *)
     @objc private func displayLinkDidFire(_ sender: CADisplayLink) {
         guard let displayLink, sender === displayLink else { return }
         let firstElapsed = sender.duration > 0 ? sender.duration : SmoothScrollSupport.frameInterval

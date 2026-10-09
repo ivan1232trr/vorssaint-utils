@@ -629,7 +629,7 @@ struct MixerOptionsControls: View {
             Toggle(l10n.s.preciseVolumeRollerEnable, isOn: $preciseVolumeRollerEnabled)
                 .toggleStyle(.checkbox)
                 .font(.system(size: 11.5, weight: .medium))
-                .onChange(of: preciseVolumeRollerEnabled) { _, enabled in
+                .onChangeCompat(of: preciseVolumeRollerEnabled) { _, enabled in
                     if enabled { permissions.requestAccessibility() }
                     PreciseVolumeRollerService.shared.syncWithPreferences()
                 }
@@ -780,7 +780,7 @@ struct SoundOutputSwitcherControls: View {
             Toggle(l10n.s.soundOutputSwitcherEnable, isOn: $enabled)
                 .toggleStyle(.checkbox)
                 .font(.system(size: 11.5, weight: .medium))
-                .onChange(of: enabled) { _, isEnabled in
+                .onChangeCompat(of: enabled) { _, isEnabled in
                     if isEnabled, selectedUIDs.isEmpty,
                        let current = mixer.currentOutputDeviceUID,
                        universalOutputDevices.contains(where: { $0.uid == current }) {

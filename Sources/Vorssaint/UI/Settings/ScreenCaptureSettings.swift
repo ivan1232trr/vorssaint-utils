@@ -49,10 +49,10 @@ struct ScreenCaptureSettings: View {
         }
         .formStyle(.grouped)
         .onAppear { reconcileSelection(withDestination: true) }
-        .onChange(of: features.revision) { _, _ in
+        .onChangeCompat(of: features.revision) { _, _ in
             reconcileSelection(withDestination: false)
         }
-        .onChange(of: router.requestID) { _, _ in
+        .onChangeCompat(of: router.requestID) { _, _ in
             reconcileSelection(withDestination: true)
         }
     }
@@ -111,7 +111,7 @@ private struct RecentCapturesShortcutRows: View {
     var body: some View {
         let role = GlobalShortcutRole.recentCaptures
         Toggle(role.title(l10n.s), isOn: $enabled)
-            .onChange(of: enabled) { _, _ in
+            .onChangeCompat(of: enabled) { _, _ in
                 service.syncWithPreferences()
             }
         ShortcutPreferenceRow(role: role, isEnabled: enabled) {
@@ -157,7 +157,7 @@ private struct ToolShortcutRows: View {
 
     var body: some View {
         Toggle(keys.role.title(l10n.s), isOn: $enabled)
-            .onChange(of: enabled) { _, _ in
+            .onChangeCompat(of: enabled) { _, _ in
                 service.syncWithPreferences()
             }
         ShortcutPreferenceRow(role: keys.role, isEnabled: enabled) {

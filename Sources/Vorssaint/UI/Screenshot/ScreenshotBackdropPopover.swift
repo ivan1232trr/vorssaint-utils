@@ -257,7 +257,7 @@ struct ScreenshotBackdropPopover<Model: BackdropEditing>: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
                 .controlSize(.small)
-                .onChange(of: customIsGradient) { _, _ in
+                .onChangeCompat(of: customIsGradient) { _, _ in
                     activeWell = 0
                     applyCustom()
                 }

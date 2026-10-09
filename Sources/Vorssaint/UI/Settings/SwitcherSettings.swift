@@ -109,7 +109,7 @@ struct SwitcherSettings: View {
                         caption: l10n.s.switcherEnableCaption) {
                 Toggle(l10n.s.switcherEnable, isOn: $switcherEnabled)
                     .labelsHidden()
-                    .onChange(of: switcherEnabled) { _, _ in
+                    .onChangeCompat(of: switcherEnabled) { _, _ in
                         AppSwitcher.shared.syncWithPreferences()
                     }
             }
@@ -153,7 +153,7 @@ struct SwitcherSettings: View {
                             caption: l10n.s.switcherTakeOverSystemShortcutsCaption) {
                     Toggle(l10n.s.switcherTakeOverSystemShortcuts, isOn: $switcherTakeOverSystemShortcuts)
                         .labelsHidden()
-                        .onChange(of: switcherTakeOverSystemShortcuts) { _, _ in
+                        .onChangeCompat(of: switcherTakeOverSystemShortcuts) { _, _ in
                             AppSwitcher.shared.syncWithPreferences()
                         }
                 }
@@ -204,7 +204,7 @@ struct SwitcherSettings: View {
             SettingsRow(symbol: "arrow.down.right.and.arrow.up.left", title: l10n.s.switcherShowFullscreenWindows) {
                 Toggle(l10n.s.switcherShowFullscreenWindows, isOn: $switcherShowFullscreenWindows)
                     .labelsHidden()
-                    .onChange(of: switcherShowFullscreenWindows) { _, _ in
+                    .onChangeCompat(of: switcherShowFullscreenWindows) { _, _ in
                         AppSwitcher.shared.syncWithPreferences()
                     }
             }
@@ -214,7 +214,7 @@ struct SwitcherSettings: View {
                     choices: [(WindowSwitchMinimizedPlacement.normal.rawValue, l10n.s.switcherMinimizedPlacementNormal),
                               (WindowSwitchMinimizedPlacement.end.rawValue, l10n.s.switcherMinimizedPlacementEnd),
                               (WindowSwitchMinimizedPlacement.hidden.rawValue, l10n.s.switcherMinimizedPlacementHidden)])
-                .onChange(of: switcherMinimizedPlacement) { _, _ in
+                .onChangeCompat(of: switcherMinimizedPlacement) { _, _ in
                     AppSwitcher.shared.syncWithPreferences()
                 }
             if switcherMinimizedPlacement != WindowSwitchMinimizedPlacement.normal.rawValue {
@@ -222,7 +222,7 @@ struct SwitcherSettings: View {
                     Toggle(l10n.s.switcherTreatHiddenAppsLikeMinimized,
                            isOn: $switcherTreatHiddenAppsLikeMinimized)
                         .labelsHidden()
-                        .onChange(of: switcherTreatHiddenAppsLikeMinimized) { _, _ in
+                        .onChangeCompat(of: switcherTreatHiddenAppsLikeMinimized) { _, _ in
                             AppSwitcher.shared.syncWithPreferences()
                         }
                 }

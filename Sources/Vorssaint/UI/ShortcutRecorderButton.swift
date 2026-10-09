@@ -431,7 +431,7 @@ struct ShortcutPreferenceRow: View {
                                             })
             }
         }
-        .onChange(of: l10n.language) { _, _ in errorText = nil }
+        .onChangeCompat(of: l10n.language) { _, _ in errorText = nil }
     }
 
     private var shortcut: GlobalShortcut {

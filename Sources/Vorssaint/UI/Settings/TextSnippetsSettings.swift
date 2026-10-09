@@ -29,7 +29,7 @@ struct TextSnippetsSettings: View {
         Form {
             Section {
                 Toggle(text.enable, isOn: $enabled)
-                    .onChange(of: enabled) { _, _ in
+                    .onChangeCompat(of: enabled) { _, _ in
                         TextSnippetService.shared.syncWithPreferences()
                     }
                 Text(text.enableCaption)
@@ -40,7 +40,7 @@ struct TextSnippetsSettings: View {
                 }
                 if enabled {
                     Toggle(text.soundToggle, isOn: $soundEnabled)
-                        .onChange(of: soundEnabled) { _, _ in
+                        .onChangeCompat(of: soundEnabled) { _, _ in
                             TextSnippetService.shared.syncExpansionSound()
                         }
                     Text(text.soundCaption)
@@ -62,7 +62,7 @@ struct TextSnippetsSettings: View {
                                 Text(text.soundUnavailable).tag(soundName)
                             }
                         }
-                        .onChange(of: soundName) { _, _ in
+                        .onChangeCompat(of: soundName) { _, _ in
                             TextSnippetService.shared.syncExpansionSound()
                             TextSnippetService.shared.previewExpansionSound()
                         }
@@ -72,7 +72,7 @@ struct TextSnippetsSettings: View {
 
             Section {
                 Toggle(text.libraryToggle, isOn: $libraryEnabled)
-                    .onChange(of: libraryEnabled) { _, _ in
+                    .onChangeCompat(of: libraryEnabled) { _, _ in
                         SnippetLibraryService.shared.syncWithPreferences()
                     }
                 Text(text.libraryCaption)

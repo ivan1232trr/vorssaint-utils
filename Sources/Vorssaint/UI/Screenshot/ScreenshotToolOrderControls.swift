@@ -67,7 +67,7 @@ struct ScreenshotToolOrderControls: View {
                 .disabled(orderRaw == ScreenshotSupport.Tool.defaultOrderStorage && bindingsRaw.isEmpty)
             }
         }
-        .onChange(of: l10n.language) { _, _ in errorText = nil }
+        .onChangeCompat(of: l10n.language) { _, _ in errorText = nil }
         .onAppear { keyboard.start() }
         .onDisappear { keyboard.stop() }
     }

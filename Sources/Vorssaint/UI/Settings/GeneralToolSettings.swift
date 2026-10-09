@@ -216,7 +216,7 @@ private struct MenuBarIconNameField: View {
             // The popover's window is not key yet while it appears.
             DispatchQueue.main.async { focused = true }
         }
-        .onChange(of: draft) { _, newValue in
+        .onChangeCompat(of: draft) { _, newValue in
             let kept = Defaults.menuBarIconSymbolToSave(typed: newValue, opening: openingName) {
                 BlackHoleGlyph.customMark(named: $0) != nil
             }
@@ -241,7 +241,7 @@ private struct MusicBlockingSettings: View {
                 Toggle(l10n.s.musicBlockTitle, isOn: $enabled)
                     .labelsHidden()
                     .toggleStyle(.switch)
-                    .onChange(of: enabled) { _, _ in
+                    .onChangeCompat(of: enabled) { _, _ in
                         musicBlocker.syncWithPreferences()
                     }
             }

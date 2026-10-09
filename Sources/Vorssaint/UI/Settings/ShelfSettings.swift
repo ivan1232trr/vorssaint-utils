@@ -25,7 +25,7 @@ struct ShelfSettings: View {
         Form {
             Section {
                 Toggle(l10n.s.shelfEnable, isOn: $enabled)
-                    .onChange(of: enabled) { _, _ in
+                    .onChangeCompat(of: enabled) { _, _ in
                         ShelfService.shared.syncWithPreferences()
                     }
                 Text(l10n.s.shelfEnableCaption)
@@ -60,7 +60,7 @@ struct ShelfSettings: View {
 
                 Section {
                     Toggle(l10n.s.shelfShortcutToggle, isOn: $shortcutEnabled)
-                        .onChange(of: shortcutEnabled) { _, _ in
+                        .onChangeCompat(of: shortcutEnabled) { _, _ in
                             ShelfService.shared.syncHotkey()
                         }
                     ShortcutPreferenceRow(role: .shelf, isEnabled: shortcutEnabled) {
@@ -86,7 +86,7 @@ struct ShelfSettings: View {
                     }
                     VStack(alignment: .leading, spacing: 3) {
                         Toggle(l10n.s.shelfShakeToggle, isOn: $shake)
-                            .onChange(of: shake) { _, _ in
+                            .onChangeCompat(of: shake) { _, _ in
                                 ShelfService.shared.syncDragMonitor()
                             }
                         Text(l10n.s.shelfShakeCaption)
@@ -95,7 +95,7 @@ struct ShelfSettings: View {
                     }
                     VStack(alignment: .leading, spacing: 3) {
                         Toggle(l10n.s.shelfDropZoneToggle, isOn: $dropZone)
-                            .onChange(of: dropZone) { _, _ in
+                            .onChangeCompat(of: dropZone) { _, _ in
                                 ShelfService.shared.syncDragMonitor()
                             }
                         Text(dockPlacement == ShelfDockPlacement.topCenter.rawValue && !islandOn
@@ -110,7 +110,7 @@ struct ShelfSettings: View {
                                 Text(l10n.s.shelfDockTopCenter).tag(ShelfDockPlacement.topCenter.rawValue)
                             }
                             .disabled(islandOn)
-                            .onChange(of: dockPlacement) { _, _ in
+                            .onChangeCompat(of: dockPlacement) { _, _ in
                                 ShelfService.shared.syncDockedShelf()
                             }
                             if islandOn {
@@ -122,7 +122,7 @@ struct ShelfSettings: View {
                     }
                     VStack(alignment: .leading, spacing: 3) {
                         Toggle(l10n.s.shelfEdgeToggle, isOn: $edgeDrag)
-                            .onChange(of: edgeDrag) { _, _ in
+                            .onChangeCompat(of: edgeDrag) { _, _ in
                                 ShelfService.shared.syncDragMonitor()
                             }
                         Text(l10n.s.shelfEdgeCaption)

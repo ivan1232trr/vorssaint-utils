@@ -357,7 +357,7 @@ struct RecorderInspector: View {
                 .lineLimit(1...3)
                 .focused($textFieldFocused)
                 .onSubmit { model.commitZoomEdit() }
-                .onChange(of: textFieldFocused) { _, focused in
+                .onChangeCompat(of: textFieldFocused) { _, focused in
                     if !focused { model.commitZoomEdit() }
                 }
                 .onDisappear { model.commitZoomEdit() }

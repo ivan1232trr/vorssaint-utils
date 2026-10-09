@@ -27,7 +27,7 @@ struct NotchDownloadsSettingsControls: View {
                 }
             }.controlSize(.small)
         }
-        .onChange(of: enabled) { NotchService.shared.syncWithPreferences() }
+        .onChangeCompat(of: enabled) { NotchService.shared.syncWithPreferences() }
     }
 }
 
@@ -88,7 +88,7 @@ private struct NotchDownloadsSetupView: View {
         } else if !enabled {
             Toggle(text.downloadsTitle, isOn: $enabled)
                 .toggleStyle(.switch)
-                .onChange(of: enabled) { NotchService.shared.syncWithPreferences() }
+                .onChangeCompat(of: enabled) { NotchService.shared.syncWithPreferences() }
         } else {
             chooseActions
         }

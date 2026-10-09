@@ -62,7 +62,7 @@ struct WhatsAppDownloadsSettings: View {
             if manager.phase == .idle { manager.scan() }
         }
         .onDisappear { manager.setReviewVisible(false) }
-        .onChange(of: manager.phase) { _, phase in
+        .onChangeCompat(of: manager.phase) { _, phase in
             if automatic, phase == .results || phase == .failed {
                 WhatsAppDownloadScheduler.shared.syncWithPreferences()
             }
@@ -157,7 +157,7 @@ struct WhatsAppDownloadsSettings: View {
                     Text(String(format: text.daysFormat, days)).tag(days)
                 }
             }
-            .onChange(of: retentionDays) { _, value in
+            .onChangeCompat(of: retentionDays) { _, value in
                 retentionDays = WhatsAppDownloadSupport.sanitizedRetentionDays(value)
                 refreshResultsIfVisible()
             }
@@ -165,7 +165,7 @@ struct WhatsAppDownloadsSettings: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Toggle(l10n.s.cleanerScheduleNotifyToggle, isOn: $notify)
-                .onChange(of: notify) { _, enabled in
+                .onChangeCompat(of: notify) { _, enabled in
                     if enabled { Notifier.requestPermission() }
                 }
             if notify, permissions.notifications == .denied {
@@ -224,7 +224,7 @@ struct WhatsAppDownloadsSettings: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Toggle(organizerText.enabled, isOn: $organizerEnabled)
-                .onChange(of: organizerEnabled) { _, enabled in
+                .onChangeCompat(of: organizerEnabled) { _, enabled in
                     if enabled {
                         manager.scan()
                         if notify { Notifier.requestPermission() }
@@ -244,7 +244,7 @@ struct WhatsAppDownloadsSettings: View {
                     Text(organizerText.byType).tag(WhatsAppOrganizerLayout.category.rawValue)
                     Text(organizerText.byMonth).tag(WhatsAppOrganizerLayout.month.rawValue)
                 }
-                .onChange(of: organizerLayout) { _, _ in organizer.syncWithPreferences() }
+                .onChangeCompat(of: organizerLayout) { _, _ in organizer.syncWithPreferences() }
                 .disabled(organizer.isBusy)
 
                 Picker(organizerText.delay, selection: $organizerDelay) {
@@ -252,7 +252,7 @@ struct WhatsAppDownloadsSettings: View {
                         Text(String(format: organizerText.minutesFormat, $0)).tag($0)
                     }
                 }
-                .onChange(of: organizerDelay) { _, value in
+                .onChangeCompat(of: organizerDelay) { _, value in
                     organizerDelay = WhatsAppDownloadSupport.sanitizedOrganizerDelayMinutes(value)
                     organizer.syncWithPreferences()
                 }
@@ -266,7 +266,7 @@ struct WhatsAppDownloadsSettings: View {
                     Text(organizerText.replaceExisting)
                         .tag(WhatsAppDuplicateAction.replaceExisting.rawValue)
                 }
-                .onChange(of: duplicateAction) { _, _ in organizer.syncWithPreferences() }
+                .onChangeCompat(of: duplicateAction) { _, _ in organizer.syncWithPreferences() }
                 .disabled(organizer.isBusy)
                 Text(organizerText.duplicateCaption)
                     .font(.caption)

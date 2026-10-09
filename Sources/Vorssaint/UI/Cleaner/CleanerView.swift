@@ -55,8 +55,8 @@ struct CleanerSettings: View {
             if !whatsAppEnabled { tool = .system }
             consumeToolHint()
         }
-        .onChange(of: router.cleanerTool) { _, _ in consumeToolHint() }
-        .onChange(of: whatsAppEnabled) { _, enabled in
+        .onChangeCompat(of: router.cleanerTool) { _, _ in consumeToolHint() }
+        .onChangeCompat(of: whatsAppEnabled) { _, enabled in
             tool = enabled ? .whatsApp : .system
             WhatsAppDownloadScheduler.shared.syncWithPreferences()
             WhatsAppDownloadOrganizer.shared.syncWithPreferences()
@@ -150,8 +150,7 @@ struct CleanerView: View {
             Image(systemName: "sparkles")
                 .font(.system(size: size, weight: .light))
                 .foregroundStyle(.secondary)
-                .symbolEffect(.variableColor.iterative.reversing,
-                              options: .repeating, isActive: animating)
+                .variableColorEffectCompat(reversing: true, isActive: animating)
         }
     }
 
@@ -707,11 +706,11 @@ struct CleanerView: View {
                     for: NSApplication.didBecomeActiveNotification)) { _ in
                     refresh()
                 }
-                .onChange(of: frequency) { _, _ in CleanerScheduler.shared.syncWithPreferences() }
-                .onChange(of: hour) { _, _ in CleanerScheduler.shared.syncWithPreferences() }
-                .onChange(of: minute) { _, _ in CleanerScheduler.shared.syncWithPreferences() }
-                .onChange(of: weekday) { _, _ in CleanerScheduler.shared.syncWithPreferences() }
-                .onChange(of: notify) { _, wanted in
+                .onChangeCompat(of: frequency) { _, _ in CleanerScheduler.shared.syncWithPreferences() }
+                .onChangeCompat(of: hour) { _, _ in CleanerScheduler.shared.syncWithPreferences() }
+                .onChangeCompat(of: minute) { _, _ in CleanerScheduler.shared.syncWithPreferences() }
+                .onChangeCompat(of: weekday) { _, _ in CleanerScheduler.shared.syncWithPreferences() }
+                .onChangeCompat(of: notify) { _, wanted in
                     if wanted { Notifier.requestPermission() }
                     refresh()
                 }

@@ -38,7 +38,7 @@ struct ClipboardEntryPreviewSidebar: View {
                 emptyState
             }
         }
-        .onChange(of: entry?.id) { _, newID in
+        .onChangeCompat(of: entry?.id) { _, newID in
             if editingEntryID != nil, editingEntryID != newID {
                 cancelEditing()
             }

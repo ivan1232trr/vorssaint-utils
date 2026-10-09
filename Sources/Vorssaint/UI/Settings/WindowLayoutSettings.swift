@@ -67,7 +67,7 @@ struct WindowLayoutSettings: View {
             if AppFeature.windowLayout.isAvailable {
                 Section(text.gestureSection) {
                     Toggle(text.edgeSnapEnable, isOn: $edgeSnapEnabled)
-                        .onChange(of: edgeSnapEnabled) { _, _ in
+                        .onChangeCompat(of: edgeSnapEnabled) { _, _ in
                             WindowLayoutService.shared.syncWithPreferences()
                         }
                     Text(text.edgeSnapCaption)
@@ -79,7 +79,7 @@ struct WindowLayoutSettings: View {
                                              resetTitle: l10n.s.shortcutReset)
                         .disabled(!edgeSnapEnabled)
                         .opacity(edgeSnapEnabled ? 1 : 0.45)
-                        .onChange(of: edgeSnapDisabledZones) { _, _ in
+                        .onChangeCompat(of: edgeSnapDisabledZones) { _, _ in
                             WindowLayoutService.shared.syncWithPreferences()
                         }
                     if systemTilingEnabled {
@@ -97,7 +97,7 @@ struct WindowLayoutSettings: View {
                         .controlSize(.small)
                     }
                     Toggle(text.gestureEnable, isOn: $gestureEnabled)
-                        .onChange(of: gestureEnabled) { _, _ in
+                        .onChangeCompat(of: gestureEnabled) { _, _ in
                             WindowLayoutService.shared.syncWithPreferences()
                         }
                     Text(text.gestureCaption)
@@ -106,7 +106,7 @@ struct WindowLayoutSettings: View {
                     if gestureEnabled {
                         WindowGestureModifierPicker(storageValue: $gestureModifiers,
                                                     title: text.gestureModifiers)
-                            .onChange(of: gestureModifiers) { _, _ in
+                            .onChangeCompat(of: gestureModifiers) { _, _ in
                                 WindowLayoutService.shared.syncWithPreferences()
                             }
                         WindowGestureHints(modifierStorage: gestureModifiers,
@@ -133,7 +133,7 @@ struct WindowLayoutSettings: View {
 
                 Section(text.shortcuts) {
                     Toggle(text.shortcuts, isOn: $shortcutsEnabled)
-                        .onChange(of: shortcutsEnabled) { _, _ in
+                        .onChangeCompat(of: shortcutsEnabled) { _, _ in
                             WindowLayoutService.shared.syncWithPreferences()
                         }
                     Text(text.shortcutsCaption)
@@ -146,7 +146,7 @@ struct WindowLayoutSettings: View {
                     }
                     Toggle(WindowDirectionalStrings.localized(l10n.language).title,
                            isOn: $directionalEnabled)
-                        .onChange(of: directionalEnabled) { _, _ in service.syncWithPreferences() }
+                        .onChangeCompat(of: directionalEnabled) { _, _ in service.syncWithPreferences() }
                     Text(WindowDirectionalStrings.localized(l10n.language).caption)
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -179,7 +179,7 @@ struct WindowLayoutSettings: View {
                 Section {
                     Toggle(PointerDisplayStrings.localized(l10n.language).title,
                            isOn: $pointerDisplayEnabled)
-                        .onChange(of: pointerDisplayEnabled) { _, _ in
+                        .onChangeCompat(of: pointerDisplayEnabled) { _, _ in
                             // Also syncs the pointer key, and starts or stops
                             // watching app switches for Ignore apps.
                             service.syncWithPreferences()
@@ -203,7 +203,7 @@ struct WindowLayoutSettings: View {
 
                 Section {
                     Toggle(l10n.s.dockClickCycleWindows, isOn: $dockClickCycleWindows)
-                        .onChange(of: dockClickCycleWindows) { _, _ in
+                        .onChangeCompat(of: dockClickCycleWindows) { _, _ in
                             DockClickService.shared.syncWithPreferences()
                         }
                     Text(l10n.s.dockClickCycleWindowsCaption)
@@ -241,7 +241,7 @@ struct WindowLayoutSettings: View {
     private var windowMaximizerSection: some View {
         Section {
             Toggle(l10n.s.windowMaximizeName, isOn: $maximizeEnabled)
-                .onChange(of: maximizeEnabled) { _, _ in
+                .onChangeCompat(of: maximizeEnabled) { _, _ in
                     WindowMaximizer.shared.syncWithPreferences()
                 }
             Text(l10n.s.windowMaximizeCaption)
@@ -522,7 +522,7 @@ private struct WindowLayoutActionRow: View {
                 )
             }
         }
-        .onChange(of: l10n.language) { _, _ in errorText = nil }
+        .onChangeCompat(of: l10n.language) { _, _ in errorText = nil }
     }
 
     private var shortcut: GlobalShortcut? {
