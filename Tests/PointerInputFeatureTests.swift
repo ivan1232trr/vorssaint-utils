@@ -2151,7 +2151,7 @@ enum PointerInputFeatureTests {
                "the exception list the tap consults for the drag stays on screen while either switch is on")
         var spacesSwitchOffDropsBinding = false
         for (index, line) in mouseSettingsLines.enumerated()
-        where isCodeLine(line) && line.contains(".onChange(of: spacesEnabled)") {
+        where isCodeLine(line) && line.contains(".onChangeCompat(of: spacesEnabled)") {
             let window = mouseSettingsLines[index...].prefix(12)
             let stop = window.firstIndex {
                 $0.trimmingCharacters(in: .whitespaces) == "stopSpacesCapture()"

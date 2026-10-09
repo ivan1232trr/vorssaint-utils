@@ -3814,7 +3814,7 @@ enum SwitcherModelFeatureTests {
             encoding: .utf8)) ?? ""
         suite.expect(dockClickSource.contains("ActivationHandoff.yield(to: app)"),
                "a Dock click restore yields this app's activation first")
-        suite.expect(dockClickSource.contains("app.activate(from: NSRunningApplication.current, options: [])"),
+        suite.expect(dockClickSource.contains("app.activateFromCurrentCompat(options: [])"),
                "a Dock click restore asks cooperatively before falling back")
         // A yield only hands over activation this app holds, and it usually
         // holds none when a switch commits, so the helper self-activates first

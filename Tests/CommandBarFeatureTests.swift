@@ -2670,7 +2670,7 @@ enum CommandBarDropletContract {
         let droplet = code("Sources/Vorssaint/UI/CommandBar/CommandBarDroplet.swift")
         let view = code("Sources/Vorssaint/UI/CommandBar/CommandBarView.swift")
 
-        let typing = view.components(separatedBy: ".onChange(of: service.query) { _, query in").dropFirst().first ?? ""
+        let typing = view.components(separatedBy: ".onChangeCompat(of: service.query) { _, query in").dropFirst().first ?? ""
         suite.expect((typing.components(separatedBy: "}").first ?? "")
                         .contains("if !query.isEmpty, service.presentation == .droplet { CommandBarDroplet.shared.hurry("),
                      "typing while the drop falls hurries it")
