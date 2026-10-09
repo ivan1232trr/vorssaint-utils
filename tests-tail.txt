@@ -1,0 +1,92 @@
+▸ Building & running tests against MacOSX26.sdk…
+Sources/Vorssaint/UI/OnChangeCompat.swift:54:14: warning: 'onChange(of:perform:)' was deprecated in macOS 14.0: Use `onChange` with a two or zero parameter action closure instead. [#DeprecatedDeclaration]
+52 |             // `[value]` captures the value from this render, which is the old value by
+53 |             // the time SwiftUI reports a change, so the pair matches macOS 14's.
+54 |             .onChange(of: value) { [value] newValue in action(value, newValue) }
+   |              `- warning: 'onChange(of:perform:)' was deprecated in macOS 14.0: Use `onChange` with a two or zero parameter action closure instead. [#DeprecatedDeclaration]
+55 |     }
+56 | }
+
+Sources/Vorssaint/Support/VenturaSystemCompat.swift:32:49: warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect. [#DeprecatedDeclaration]
+ 30 |         // Ventura: take focus directly; without ignoringOtherApps a background
+ 31 |         // menu bar app cannot bring another app to the front.
+ 32 |         return activate(options: options.union(.activateIgnoringOtherApps))
+    |                                                 `- warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect. [#DeprecatedDeclaration]
+ 33 |     }
+ 34 | }
+
+Sources/Vorssaint/Support/VenturaSystemCompat.swift:45:25: warning: 'authorized' was deprecated in macOS 14.0: Check for full access or write only access [#DeprecatedDeclaration]
+ 43 |         if #available(macOS 14.0, *) { return self == .fullAccess }
+ 44 |         // Ventura: authorized means full access.
+ 45 |         return self == .authorized
+    |                         `- warning: 'authorized' was deprecated in macOS 14.0: Check for full access or write only access [#DeprecatedDeclaration]
+ 46 |     }
+ 47 | 
+
+Sources/Vorssaint/Support/VenturaSystemCompat.swift:83:43: warning: 'externalUnknown' was deprecated in macOS 14.0: renamed to 'AVCaptureDevice.DeviceType.external' [#DeprecatedDeclaration]
+ 81 |         }
+ 82 |         // Ventura: built-in and external (which includes Continuity Camera there).
+ 83 |         return [.builtInWideAngleCamera, .externalUnknown]
+    |                                           |- warning: 'externalUnknown' was deprecated in macOS 14.0: renamed to 'AVCaptureDevice.DeviceType.external' [#DeprecatedDeclaration]
+    |                                           `- note: use 'AVCaptureDevice.DeviceType.external' instead
+ 84 |     }
+ 85 | }
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+IOServiceMatchingfailed for: AppleM2ScalerParavirtDriver
+harness: OK (290 checks, 0.12s)
+metrics: OK (468 checks, 0.62s)
+clipboard: OK (1123 checks, 1.80s)
+pointer-input: OK (996 checks, 0.41s)
+scroll-modifier: OK (350 checks, 0.01s)
+linear-scroll: OK (16 checks, 0.02s)
+preferences: OK (111 checks, 0.60s)
+app-management: OK (334 checks, 0.59s)
+window-layout: OK (452 checks, 0.49s)
+media: OK (113 checks, 0.84s)
+mixer: OK (516 checks, 1.37s)
+audio-priority: OK (21 checks, 0.00s)
+shelf: OK (472 checks, 2.00s)
+overlays: OK (29 checks, 0.45s)
+updates: OK (865 checks, 3.78s)
+repository: OK (314 checks, 10.61s)
+screenshots: OK (1086 checks, 7.74s)
+recorder: OK (666 checks, 46.95s)
+command-bar: OK (730 checks, 1.12s)
+notch: OK (70516 checks, 61.58s)
+switcher-model: OK (1793 checks, 0.43s)
+agents: OK (664 checks, 2.37s)
+features: OK (1163 checks, 0.21s)
+utilities: OK (433 checks, 1.09s)
+settings: OK (494 checks, 40.02s)
+display-restoration: OK (123 checks, 0.02s)
+software-dimming: OK (31 checks, 0.00s)
+capture: OK (158 checks, 0.06s)
+keyboard: OK (20586 checks, 0.09s)
+storage: OK (177 checks, 0.16s)
+quit-protection: OK (207 checks, 0.02s)
+scratchpad: OK (79 checks, 0.00s)
+recording: OK (234 checks, 1.41s)
+network: OK (159 checks, 1.85s)
+app-updates: OK (297 checks, 0.11s)
+localization: OK (7826 checks, 0.58s)
+cleaner: OK (61 checks, 0.42s)
+uninstaller: OK (65 checks, 0.14s)
+force-quit: OK (21 checks, 0.42s)
+launcher: OK (102 checks, 0.04s)
+dock-autohide: OK (181 checks, 15.34s)
+spaces-order: OK (120 checks, 1.07s)
+switcher: OK (272 checks, 6.32s)
+keep-awake: OK (151 checks, 0.03s)
+wallpaper: OK (37 checks, 0.03s)
+emoji: OK (225 checks, 0.14s)
+TESTS OK (115127 checks)
+PREFERENCE CLEANUP TESTS OK
+UNINSTALL SPACES TESTS OK
+▸ Installing into /var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/tmp.45CaIk8Aad/Applications…
+✓ Installed: /var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/tmp.45CaIk8Aad/Applications/Vorssaint (Developer).app
+▸ Installing into /var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/tmp.45CaIk8Aad/Applications…
+  (legacy Vorss.app removed)
+  (legacy Vorssaint Utils.app removed)
+✓ Installed: /var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/tmp.45CaIk8Aad/Applications/Vorssaint.app
+DEVELOPER INSTALL ISOLATION TESTS OK
